@@ -24,6 +24,7 @@ GEMREADOUT_VER_PATCH=0
 
 Sources =version.cc
 Sources+=GEMDataParker.cc
+#Sources+=GEMDataChecker.cc
 
 DynamicLibrary=gem_readout
 
@@ -31,6 +32,7 @@ IncludeDirs =$(BUILD_HOME)/$(Project)/$(Package)/include
 IncludeDirs+=$(BUILD_HOME)/$(Project)/gemutils/include 
 IncludeDirs+=$(BUILD_HOME)/$(Project)/gembase/include 
 IncludeDirs+=$(BUILD_HOME)/$(Project)/gemhardware/include 
+IncludeDirs+=$(BUILD_HOME)/gem-light-dqm/dqm-root/include
 IncludeDirs+=$(XDAQ_ROOT)/include 
 IncludeDirs+=$(uHALROOT)/include 
 IncludeDirs+=$(ROOTDIR)/include 
