@@ -221,6 +221,7 @@ private:
             strcat(dirvfat,"VFAT-");
             strcat(dirvfat, vslot_ch);
             int vID = v->ChipID();
+            if (DEBUG) std::cout << std::dec << "[gemTreeReader]: VFAT chip ID " << std::hex << vID << std::dec << std::endl;
             char vID_ch[10];
             vID_ch[0] = '\0';
             sprintf(vID_ch, "%d", vID);
@@ -280,7 +281,7 @@ private:
           v_gebH = v_amcH[a_c].gebsH();
           //AMC_histogram * t_amcH = &(m_amc13H->amcsH().at(a_c));
           v_amcH[a_c].fillHistograms(&*a);
-          if (m_RunType){m_deltaV = a->Param3() - a->Param2();}
+          if (m_RunType){m_deltaV = a->Param2() - a->Param3();}
           g_c=0;
 	        /* LOOP THROUGH GEBs */
           for(auto g=v_geb.begin(); g!=v_geb.end();g++){
