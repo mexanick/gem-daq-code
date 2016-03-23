@@ -27,6 +27,18 @@ class AMC13_histogram: public Hardware_histogram
     void fillHistograms(AMC13Event *amc13){
       nAMC->Fill(amc13->nAMC());
       LV1_id->Fill(amc13->LV1_id());
+      control_bit5->Fill(amc13->cb_5()); //added from here
+      control_bitA->Fill(amc13->cbA());
+      Evt_ty->Fill(amc13->Evt_ty()); 
+      BX_id->Fill(amc13->BX_id());
+      Source_id->Fill(amc13->Source_id());
+      CalTyp->Fill(amc13->CalTyp());
+      Blk_Not->Fill(amc13->Blk_NoT());
+      LV1_idT->Fill(amc13->LV1_idT());
+      BX_idT->Fill(amc13->BX_idT());
+      EvtLength->Fill(amc13->EvtLength());
+      CRC_cdf->Fill(amc13->CRC_cdf()); //to here 
+
     }
     void addAMCH(AMC_histogram amcH){m_amcsH.push_back(amcH);}
     std::vector<AMC_histogram> amcsH(){return m_amcsH;}

@@ -444,8 +444,23 @@ class AMC13Event
     AMC13Event(){}
     ~AMC13Event(){m_AMC_size.clear(); m_Blk_No.clear(); m_AMC_No.clear(); m_BoardID.clear(); m_amcs.clear();}
 
-    int nAMC(){return unsigned(m_nAMC);}
-    int LV1_id(){return unsigned(m_LV1_id);}
+    int nAMC()            {return unsigned(m_nAMC);}
+    int LV1_id()          {return unsigned(m_LV1_id);}
+    uint8_t cb_5()        {return m_cb5;}   
+    uint8_t Evt_ty()      {return m_Evt_ty;}
+    uint16_t BX_id()      {return m_BX_id;} 
+    uint16_t Source_id()  {return m_Source_id;}
+    uint8_t CalTyp()      {return m_CalTyp;}
+    uint32_t OrN()        {return m_OrN;}
+    uint8_t cb0()         {return m_cb0;}        
+    uint32_t CRC_amc13()  {return m_CRC_amc13;}
+    uint8_t Blk_NoT()     {return m_Blk_NoT;}
+    uint8_t LV1_idT()     {return m_LV1_idT;}
+    uint16_t BX_idT()     {return m_BX_idT;}
+    uint8_t cbA()         {return m_cbA;}
+    uint32_t EvtLength()  {return  m_EvtLength;}
+    uint16_t CRC_cdf()    {return m_CRC_cdf;}
+
     std::vector<AMCdata> amcs(){return m_amcs;}
     //*** Set the CDF header. Not full header implemented yet. Doc:http://ohm.bu.edu/~hazen/CMS/AMC13/AMC13DataFormatDrawingv3.pdf
     void setCDFHeader(uint64_t word)
