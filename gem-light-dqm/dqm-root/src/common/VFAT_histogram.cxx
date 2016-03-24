@@ -1,6 +1,7 @@
 #include "Hardware_histogram.h"
 #include "TH1.h"
 #include <Event.h>
+//#include "crc_checker.h"
 
 class VFAT_histogram: public Hardware_histogram
 {
@@ -21,6 +22,8 @@ class VFAT_histogram: public Hardware_histogram
       crc_calc = new TH1F("crc_calc", "check sum value recalculated", 0xffff,  0x0 , 0xffff);
     }
     void fillHistograms(VFATdata * vfat){
+      setVFATBlockWords(vfat);
+      crc->Fill(checkCRC(vfatBlockWords));  //this may need to be crc_calc
       b1010->Fill(vfat->b1010());
       b1100->Fill(vfat->b1100());
       b1110->Fill(vfat->b1110());
@@ -39,6 +42,7 @@ class VFAT_histogram: public Hardware_histogram
         }
       }
     }
+
   private:
     TH1F* b1010;
     TH1F* BC;
@@ -50,4 +54,50 @@ class VFAT_histogram: public Hardware_histogram
     TH1F* FiredChannels;
     TH1F* crc;
     TH1F* crc_calc;
-};
+      
+    uint16_t vfatBlockWords[12];
+    void setVFATBlockWords(VFATdata * vfat_)
+    {
+      vfatBlockWords[11] = vfat_->BC();
+      vfatBlockWords[10] = vfat_->EC();
+      vfatBlockWords[9]  = vfat_->ChipID();
+      vfatBlockWords[8]  = (0xffff000000000000 & vfat_->msData()) >> 48;
+      vfatBlockWords[7]  = (0x0000ffff00000000 & vfat_->msData()) >> 32;
+      vfatBlockWords[6]  = (0x00000000ffff0000 & vfat_->msData()) >> 16;
+      vfatBlockWords[5]  = (0x000000000000ffff & vfat_->msData());
+      vfatBlockWords[4]  = (0xffff000000000000 & vfat_->lsData()) >> 48;
+      vfatBlockWords[3]  = (0x0000ffff00000000 & vfat_->lsData()) >> 32;
+      vfatBlockWords[2]  = (0x00000000ffff0000 & vfat_->lsData()) >> 16;
+      vfatBlockWords[1]  = (0x000000000000ffff & vfat_->lsData());
+    }
+
+    
+    uint16_t checkCRC(uint16_t dataVFAT[11])
+       {
+         uint16_t crc_fin = 0xffff;
+         for (int i = 11; i >= 1; i--)
+         {
+           crc_fin = this->crc_cal(crc_fin, dataVFAT[i]);
+         }
+         return(crc_fin);
+       }
+
+    uint16_t crc_cal(uint16_t crc_in, uint16_t dato)
+       {
+         uint16_t v = 0x0001;
+         uint16_t mask = 0x0001;    
+         bool d=0;
+         uint16_t crc_temp = crc_in;
+         unsigned char datalen = 16;
+          
+         for (int i=0; i<datalen; i++){
+           if (dato & v) d = 1;
+           else d = 0;
+           if ((crc_temp & mask)^d) crc_temp = crc_temp>>1 ^ 0x8408;
+           else crc_temp = crc_temp>>1;
+           v<<=1;
+         }
+         return(crc_temp);
+       }
+    
+ };
