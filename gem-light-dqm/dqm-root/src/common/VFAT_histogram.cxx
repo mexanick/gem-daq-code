@@ -1,12 +1,13 @@
 #include "Hardware_histogram.h"
 #include "TH1.h"
 #include <Event.h>
-//#include "crc_checker.h"
+#define NCHANNELS 128
 
 class VFAT_histogram: public Hardware_histogram
 {
   public:
-    VFAT_histogram(const std::string & filename, TDirectory * dir):Hardware_histogram(filename, dir){}//call base constructor
+    VFAT_histogram(const std::string & filename, TDirectory * dir, const std::string & hwid):Hardware_histogram(filename, dir, hwid){}//call base constructor
+    VFAT_histogram(VFAT_histogram * vH):Hardware_histogram("dummy", vH->m_dir, vH->m_HWID){}//call base constructor
     ~VFAT_histogram(){}
     void bookHistograms(){
       m_dir->cd();
@@ -18,12 +19,17 @@ class VFAT_histogram: public Hardware_histogram
       b1110    = new TH1F("b1110", "Control Bits", 15,  0x0 , 0xf);
       ChipID   = new TH1F("ChipID", "Chip ID", 4095,  0x0 , 0xfff);
       FiredChannels   = new TH1F("FiredChannels", "FiredChannels", 128,  0, 128);
-      crc      = new TH1F("crc", "check sum value", 0xffff,  0x0 , 0xffff);
-      crc_calc = new TH1F("crc_calc", "check sum value recalculated", 0xffff,  0x0 , 0xffff);
+      crc_difference = new TH1F("crc_difference", "difference between crc and crc_calc", 0xffff,  0x0 , 0xffff);
+      TDirectory * scandir = gDirectory->mkdir("Threshold_Scans");
+      scandir->cd();
+      for (int i = 0; i < 128; i++){
+        thresholdScan[i] = new TH1F(("thresholdScan"+to_string(static_cast<long long int>(i))).c_str(),("thresholdScan"+to_string(static_cast<long long int>(i))).c_str(),256,0,256);
+      }// end loop on channels
+      gDirectory->cd("..");
     }
     void fillHistograms(VFATdata * vfat){
-      setVFATBlockWords(vfat);
-      crc->Fill(checkCRC(vfatBlockWords));  //this may need to be crc_calc
+      setVFATBlockWords(vfat); 
+      crc_difference->Fill(vfat->crc()-checkCRC(vfatBlockWords));  
       b1010->Fill(vfat->b1010());
       b1100->Fill(vfat->b1100());
       b1110->Fill(vfat->b1110());
@@ -42,7 +48,18 @@ class VFAT_histogram: public Hardware_histogram
         }
       }
     }
-
+    void fillScanHistograms(VFATdata * vfat, int runtype, int deltaV){
+      for (int i = 0; i < 128; i++){
+        uint16_t chan0xf = 0;
+        if (i < 64){
+          chan0xf = ((vfat->lsData() >> i) & 0x1);
+          if(chan0xf) thresholdScan[i]->Fill(deltaV);
+        } else {
+          chan0xf = ((vfat->msData() >> (i-64)) & 0x1);
+          if(chan0xf) thresholdScan[i]->Fill(deltaV);
+        }
+      }// end loop on channels
+    }
   private:
     TH1F* b1010;
     TH1F* BC;
@@ -52,9 +69,9 @@ class VFAT_histogram: public Hardware_histogram
     TH1F* b1110;
     TH1F* ChipID;
     TH1F* FiredChannels;
-    TH1F* crc;
-    TH1F* crc_calc;
-      
+    TH1F* crc_difference;
+    TH1F* thresholdScan[NCHANNELS]; 
+
     uint16_t vfatBlockWords[12];
     void setVFATBlockWords(VFATdata * vfat_)
     {
@@ -100,4 +117,4 @@ class VFAT_histogram: public Hardware_histogram
          return(crc_temp);
        }
     
- };
+};

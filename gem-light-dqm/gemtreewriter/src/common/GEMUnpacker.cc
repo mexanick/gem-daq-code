@@ -75,12 +75,16 @@ class GEMUnpacker
           m_amcdata->setAMCheader2(m_word);
           std::fread(&m_word, sizeof(uint64_t), 1, m_file);
           m_amcdata->setGEMeventHeader(m_word);
+        printf("GEM EVENT HEADER\n");
+        printf("%016llX\n", m_word);
           // fill the geb data here
           std::cout << "GDcount = " << m_amcdata->GDcount() << std::endl;
           for (unsigned short j = 0; j < m_amcdata->GDcount(); j++){
             GEBdata * m_gebdata = new GEBdata();
             std::fread(&m_word, sizeof(uint64_t), 1, m_file);
             m_gebdata->setChamberHeader(m_word);
+        printf("GEM CHAMBER HEADER\n");
+        printf("%016llX\n", m_word);
             // fill the vfat data here
             std::cout << "Number of VFAT words " << m_gebdata->Vwh() << std::endl;
             int m_nvb = m_gebdata->Vwh() / 3; // number of VFAT2 blocks. Eventually add here sanity check
