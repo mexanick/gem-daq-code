@@ -1,10 +1,16 @@
 #include "VFAT_histogram.cxx"
 #include "TH1.h"
 
+//!A class that creates histograms for GEB data
 class GEB_histogram: public Hardware_histogram
 {
   public:
     GEB_histogram(const std::string & filename, TDirectory * dir, const std::string & hwid):Hardware_histogram(filename, dir, hwid){}//call base constructor
+
+    //!Books histograms for GEB data
+    /**
+     Books histograms for the following data: Zero Suppresion flags, GLIB input ID, VFAT word count (header), Errors and Warnings (Thirteen Flags, InFIFO underflow flag, Stuck data flag), OH CRC, VFAT word count (trailer)
+     */
     void bookHistograms()
     {
       m_dir->cd();
@@ -21,6 +27,13 @@ class GEB_histogram: public Hardware_histogram
       OHCRC    = new TH1F("OHCRC", "OH CRC", 0xffff,  0x0 , 0xffff);
       Vwt      = new TH1F("Vwt", "VFAT word count", 4095,  0x0 , 0xfff);
     }
+
+
+    //!Fills histograms for GEB data
+    /**
+     Fills the histograms for the following data: Zero Suppresion flags, GLIB input ID, VFAT word count (header), Errors and Warnings (Thirteen Flags, InFIFO underflow flag, Stuck data flag), OH CRC, VFAT word count (trailer)
+     */
+
     void fillHistograms(GEBdata * geb){
       ZeroSup->Fill(geb->ZeroSup());
       InputID->Fill(geb->InputID());
@@ -46,10 +59,13 @@ class GEB_histogram: public Hardware_histogram
       binFired = (geb->InFu() & 0x1);
       if (binFired) Warnings->Fill(4);
     }
+
+    //!Adds a VFAT_histogram object to the m_vfatH vector
     void addVFATH(VFAT_histogram vfatH){m_vfatsH.push_back(vfatH);}
+    //!Returns the m_vfatsH vector
     std::vector<VFAT_histogram> vfatsH(){return m_vfatsH;}
   private:
-    std::vector<VFAT_histogram> m_vfatsH;
+    std::vector<VFAT_histogram> m_vfatsH;    ///<A vector of VFAT_histogram 
     TH1F* ZeroSup;
     TH1F* InputID;
     TH1F* Vwh;

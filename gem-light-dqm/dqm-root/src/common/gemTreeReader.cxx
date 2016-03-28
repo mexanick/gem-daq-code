@@ -311,18 +311,18 @@ private:
               strcat(buff,vID_ch);
               strcpy(vID_ch,buff);
               std::cout << "VID " << vID_ch << std::endl;
-              //auto vfatH_ = vfat_map.find(vID_ch);
-              //if(vfatH_ != vfat_map.end()) {
-                //v_vfatH[vfatH_->second].fillHistograms(&*v);
-                v_vfatH[0].fillHistograms(&*v);
+              auto vfatH_ = vfat_map.find(vID_ch);
+              if(vfatH_ != vfat_map.end()) {
+                v_vfatH[vfatH_->second].fillHistograms(&*v);
+                //v_vfatH[0].fillHistograms(&*v);
                 if (m_RunType){
-                  //v_vfatH[vfatH_->second].fillScanHistograms(&*v, m_RunType, m_deltaV);
-                  v_vfatH[0].fillScanHistograms(&*v, m_RunType, m_deltaV);
+                  v_vfatH[vfatH_->second].fillScanHistograms(&*v, m_RunType, m_deltaV);
+                  //v_vfatH[0].fillScanHistograms(&*v, m_RunType, m_deltaV);
                 }
-              //}
-              //else {
-              //    std::cout << "VFAT Not found\n";
-              //}
+              }
+              else {
+                  std::cout << "VFAT Not found\n";
+              }
             } /* END VFAT LOOP */
           } /* END GEB LOOP */
          	a_c++;

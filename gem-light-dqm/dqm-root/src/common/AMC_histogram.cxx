@@ -1,10 +1,16 @@
 #include "GEB_histogram.cxx"
 #include "TH1.h"
 
+//!A class creating histograms for AMC data
 class AMC_histogram: public Hardware_histogram
 {
   public:
     AMC_histogram(const std::string & filename, TDirectory * dir, const std::string & hwid):Hardware_histogram(filename, dir, hwid){}//call base constructor
+
+    //!Books histograms for AMC data
+    /**
+    This books histograms for the following data: AMC number, L1A number, Bunch Crossing ID, Data Length, Format Version, Run Type, Param 1, 2 and 3, Orbit Number, Board ID, GEM DAV list, Buffer Status, GEM DAV count, TTS state, Chamber Timeout, OOS GLIB sync, CRC, L1AT, and DlengthT
+    */
     void bookHistograms()
     {
       m_dir->cd();
@@ -29,6 +35,11 @@ class AMC_histogram: public Hardware_histogram
       L1AT       = new TH1F("L1AT", "L1AT", 0xffffff,  0x0, 0xffffff);
       DlengthT   = new TH1F("DlengthT", "DlengthT", 0xffffff,  0x0, 0xffffff);
     }
+
+     //!Fills the histograms for AMC data
+    /**
+    This fills the histograms for the following data: AMC number, L1A number, Bunch Crossing ID, Data Length, Format Version, Run Type, Param 1, 2 and 3, Orbit Number, Board ID, GEM DAV list, Buffer Status, GEM DAV count, TTS state, Chamber Timeout, OOS GLIB sync, CRC, L1AT, and DlengthT
+    */
     void fillHistograms(AMCdata *amc){
       AMCnum->Fill(amc->AMCnum());
       L1A->Fill(amc->L1A());
@@ -57,10 +68,12 @@ class AMC_histogram: public Hardware_histogram
         if (binFired) ChamT->Fill(bin);
       }
     }
+    //!Adds a GEB_histogram object to m_gebsH vector
     void addGEBH(GEB_histogram gebH){m_gebsH.push_back(gebH);}
+    //!Returns the m_gebsH vector
     std::vector<GEB_histogram> gebsH(){return m_gebsH;}
   private:
-    std::vector<GEB_histogram> m_gebsH;
+    std::vector<GEB_histogram> m_gebsH;   ///<A vector of GEB_histogram
     TH1F* AMCnum;
     TH1F* L1A;
     TH1F* BX;

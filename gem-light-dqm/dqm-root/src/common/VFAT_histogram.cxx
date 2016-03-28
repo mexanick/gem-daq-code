@@ -19,7 +19,7 @@ class VFAT_histogram: public Hardware_histogram
       b1110    = new TH1F("b1110", "Control Bits", 15,  0x0 , 0xf);
       ChipID   = new TH1F("ChipID", "Chip ID", 4095,  0x0 , 0xfff);
       FiredChannels   = new TH1F("FiredChannels", "FiredChannels", 128,  0, 128);
-      crc_difference = new TH1F("crc_difference", "difference between crc and crc_calc", 0xffff,  0x0 , 0xffff);
+      crc_difference = new TH1F("crc_difference", "difference between crc and crc_calc", 0xffff,  -32768 , 32768);
       TDirectory * scandir = gDirectory->mkdir("Threshold_Scans");
       scandir->cd();
       for (int i = 0; i < 128; i++){
@@ -86,7 +86,7 @@ class VFAT_histogram: public Hardware_histogram
       vfatBlockWords[3]  = (0x0000ffff00000000 & vfat_->lsData()) >> 32;
       vfatBlockWords[2]  = (0x00000000ffff0000 & vfat_->lsData()) >> 16;
       vfatBlockWords[1]  = (0x000000000000ffff & vfat_->lsData());
-    }
+     }
 
     
     uint16_t checkCRC(uint16_t dataVFAT[11])
