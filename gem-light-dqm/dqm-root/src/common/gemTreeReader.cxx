@@ -60,9 +60,12 @@
 
 using namespace std;
 
+//!A class that creates the subdirectories and histograms from VFAT, GEM, AMC and AMC13 data
 class treeReader
 {
 public:
+
+  //!The constructor requires a file name ending with .raw.root
   treeReader(const std::string &ifilename)
   {
     std::string tmp = ifilename.substr(ifilename.size()-9, ifilename.size());
@@ -87,7 +90,7 @@ private:
   TFile *ofile;
   std::string ofilename;
 
-  std::vector<TDirectory*> AMC13dir;
+  std::vector<TDirectory*> AMC13dir;    
   std::vector<TDirectory*> AMCdir;
   std::vector<TDirectory*> GEBdir;
   std::vector<TDirectory*> VFATdir;
@@ -115,6 +118,7 @@ private:
   int m_deltaV;
   int m_Latency;
 
+  //!Fetches data from AMC13, AMC, GEB, and VFAT and puts them into vectors
   void fetchHardware()
   {
     TTree *tree = (TTree*)ifile->Get("GEMtree");
@@ -140,6 +144,7 @@ private:
     if (DEBUG) std::cout<< "[gemTreeReader]: " << "Number of VFATs: " << v_vfat.size()<< "\n";
   }
 
+  //!Creates the subdirectories for AMC13, AMC, GEB, and VFAT and books the histograms
   void bookAllHistograms()
   {
     int a13_c=0;    //counter through AMC13s
@@ -253,6 +258,8 @@ private:
       a13_c++;
     } /* END AMC13 LOOP */
   }
+
+  //!Fills the histograms that were book from bookAllHistograms
   void fillAllHistograms()
   {
     int a13_c=0;    //counter through AMC13s

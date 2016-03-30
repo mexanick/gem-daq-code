@@ -3,12 +3,18 @@
 #include <Event.h>
 #define NCHANNELS 128
 
+//!A class that creates histogram for VFAT data
 class VFAT_histogram: public Hardware_histogram
 {
   public:
     VFAT_histogram(const std::string & filename, TDirectory * dir, const std::string & hwid):Hardware_histogram(filename, dir, hwid){}//call base constructor
     VFAT_histogram(VFAT_histogram * vH):Hardware_histogram("dummy", vH->m_dir, vH->m_HWID){}//call base constructor
     ~VFAT_histogram(){}
+
+    //!Books histograms for VFAT data
+    /*!
+     This books histograms for the following data: Difference between crc and recalculated crc, Control Bit 1010, Control Bit 1100, Control Bit 1110, Bunch Crossing Number, Event Counter, Control Flags, and Chip ID, and Fired Channels. It also creates a subdirectory for Threshold Scans and books those histograms.
+     */
     void bookHistograms(){
       m_dir->cd();
       b1010    = new TH1F("b1010", "Control Bits", 15,  0x0 , 0xf);
@@ -27,7 +33,12 @@ class VFAT_histogram: public Hardware_histogram
       }// end loop on channels
       gDirectory->cd("..");
     }
-    void fillHistograms(VFATdata * vfat){
+    
+    //!Fills histograms for VFAT data
+    /*!
+     This fills histograms for the following data: Difference between crc and recalculated crc, Control Bit 1010, Control Bit 1100, Control Bit 1110, Bunch Crossing Number, Event Counter, Control Flags, and Chip ID, and Fired Channels
+     */
+        void fillHistograms(VFATdata * vfat){
       setVFATBlockWords(vfat); 
       crc_difference->Fill(vfat->crc()-checkCRC(vfatBlockWords));  
       b1010->Fill(vfat->b1010());
@@ -48,6 +59,8 @@ class VFAT_histogram: public Hardware_histogram
         }
       }
     }
+
+    //!Fills the histograms for the Threshold Scans
     void fillScanHistograms(VFATdata * vfat, int runtype, int deltaV){
       for (int i = 0; i < 128; i++){
         uint16_t chan0xf = 0;
@@ -73,11 +86,13 @@ class VFAT_histogram: public Hardware_histogram
     TH1F* thresholdScan[NCHANNELS]; 
 
     uint16_t vfatBlockWords[12];
+
+    //!This puts the VFAT data in an array of uint16_t to be used for the crc check
     void setVFATBlockWords(VFATdata * vfat_)
     {
-      vfatBlockWords[11] = vfat_->BC();
-      vfatBlockWords[10] = vfat_->EC();
-      vfatBlockWords[9]  = vfat_->ChipID();
+      vfatBlockWords[11] = ((0x000f & vfat_->b1010())<<12) |  vfat_->BC();
+      vfatBlockWords[10] = ((0x000f & vfat_->b1100())<<12) | vfat_->EC() | ((0x000f & vfat_->Flag())<<12);
+      vfatBlockWords[9]  = ((0x000f & vfat_->b1110())<<12) | vfat_->ChipID();
       vfatBlockWords[8]  = (0xffff000000000000 & vfat_->msData()) >> 48;
       vfatBlockWords[7]  = (0x0000ffff00000000 & vfat_->msData()) >> 32;
       vfatBlockWords[6]  = (0x00000000ffff0000 & vfat_->msData()) >> 16;
@@ -88,7 +103,7 @@ class VFAT_histogram: public Hardware_histogram
       vfatBlockWords[1]  = (0x000000000000ffff & vfat_->lsData());
      }
 
-    
+    //!Recalculates the CRC to be compared to original CRC. Difference should be 0.
     uint16_t checkCRC(uint16_t dataVFAT[11])
        {
          uint16_t crc_fin = 0xffff;
@@ -98,7 +113,7 @@ class VFAT_histogram: public Hardware_histogram
          }
          return(crc_fin);
        }
-
+    //!Called by checkCRC
     uint16_t crc_cal(uint16_t crc_in, uint16_t dato)
        {
          uint16_t v = 0x0001;

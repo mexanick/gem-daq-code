@@ -8,7 +8,7 @@ class AMC_histogram: public Hardware_histogram
     AMC_histogram(const std::string & filename, TDirectory * dir, const std::string & hwid):Hardware_histogram(filename, dir, hwid){}//call base constructor
 
     //!Books histograms for AMC data
-    /**
+    /*!
     This books histograms for the following data: AMC number, L1A number, Bunch Crossing ID, Data Length, Format Version, Run Type, Param 1, 2 and 3, Orbit Number, Board ID, GEM DAV list, Buffer Status, GEM DAV count, TTS state, Chamber Timeout, OOS GLIB sync, CRC, L1AT, and DlengthT
     */
     void bookHistograms()
@@ -37,7 +37,7 @@ class AMC_histogram: public Hardware_histogram
     }
 
      //!Fills the histograms for AMC data
-    /**
+    /*!
     This fills the histograms for the following data: AMC number, L1A number, Bunch Crossing ID, Data Length, Format Version, Run Type, Param 1, 2 and 3, Orbit Number, Board ID, GEM DAV list, Buffer Status, GEM DAV count, TTS state, Chamber Timeout, OOS GLIB sync, CRC, L1AT, and DlengthT
     */
     void fillHistograms(AMCdata *amc){

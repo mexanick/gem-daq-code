@@ -8,7 +8,7 @@ class GEB_histogram: public Hardware_histogram
     GEB_histogram(const std::string & filename, TDirectory * dir, const std::string & hwid):Hardware_histogram(filename, dir, hwid){}//call base constructor
 
     //!Books histograms for GEB data
-    /**
+    /*!
      Books histograms for the following data: Zero Suppresion flags, GLIB input ID, VFAT word count (header), Errors and Warnings (Thirteen Flags, InFIFO underflow flag, Stuck data flag), OH CRC, VFAT word count (trailer)
      */
     void bookHistograms()
@@ -30,7 +30,7 @@ class GEB_histogram: public Hardware_histogram
 
 
     //!Fills histograms for GEB data
-    /**
+    /*!
      Fills the histograms for the following data: Zero Suppresion flags, GLIB input ID, VFAT word count (header), Errors and Warnings (Thirteen Flags, InFIFO underflow flag, Stuck data flag), OH CRC, VFAT word count (trailer)
      */
 

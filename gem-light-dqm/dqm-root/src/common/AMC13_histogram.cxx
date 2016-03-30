@@ -8,7 +8,7 @@ class AMC13_histogram: public Hardware_histogram
     AMC13_histogram(const std::string & filename, TDirectory * dir, const std::string & hwid):Hardware_histogram(filename, dir, hwid){}//call base constructor
 
     //!Books the histograms for AMC13 data
-    /**
+    /*!
      This books histograms for the following data: control_bit5, control_bitA, Evt_ty, LV1_id, BX_id, Source_id, CalTyp, nAMC, OrN, CRC_amc13, Blk_Not, LV1_idT, BX_idT, EvtLength, and CRC_cdf
     */
     void bookHistograms()
@@ -32,7 +32,7 @@ class AMC13_histogram: public Hardware_histogram
     }
     
     //!Fills the histograms for AMC13 data
-    /**
+    /*!
      This fills histograms for the following data: control_bit5, control_bitA, Evt_ty, LV1_id, BX_id, Source_id, CalTyp, nAMC, Blk_Not, LV1_idT, BX_idT, EvtLength, and CRC_cdf
     */
     void fillHistograms(AMC13Event *amc13){
