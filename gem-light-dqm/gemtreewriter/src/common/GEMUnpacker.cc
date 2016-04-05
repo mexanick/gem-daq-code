@@ -16,7 +16,7 @@
 class GEMUnpacker
 {
   public:
-    GEMUnpacker(const std::string & ifilename)
+    GEMUnpacker(const std::string & ifilename, const std::string & isFedKit)
     {
       try {
         m_file = std::fopen(ifilename.c_str(), "rb");
@@ -27,6 +27,7 @@ class GEMUnpacker
       }
       ofilename = ifilename.substr(0, ifilename.size()-4);
       ofilename += ".raw.root";
+      m_isFedKit = isFedKit;
     }
     ~GEMUnpacker()
     {
@@ -41,8 +42,21 @@ class GEMUnpacker
      GEMtree.Branch("GEMEvents", &ev);
 
      while (true){
-        std::size_t sz = std::fread(&m_word, sizeof(uint64_t), 1, m_file);
-        if (sz == 0 ) break;
+        // read and print FEROL headers
+        if (m_isFedKit == "ferol") {
+          std::size_t sz = std::fread(&m_word, sizeof(uint64_t), 1, m_file);
+          if (sz == 0 ) break;
+          printf("%016llX\n", m_word);
+          std::fread(&m_word, sizeof(uint64_t), 1, m_file);
+          printf("%016llX\n", m_word);
+          std::fread(&m_word, sizeof(uint64_t), 1, m_file);
+          printf("%016llX\n", m_word);
+          // ferol headers read and printed, now read CDF header
+          std::fread(&m_word, sizeof(uint64_t), 1, m_file);
+        } else {
+          std::size_t sz = std::fread(&m_word, sizeof(uint64_t), 1, m_file);
+          if (sz == 0 ) break;
+        }
         // read and print "BADC0FFEEBADCAFE" and another artificial header
         //printf("%016llX\n", m_word);
         //std::fread(&m_word, sizeof(uint64_t), 1, m_file);
@@ -75,12 +89,16 @@ class GEMUnpacker
           m_amcdata->setAMCheader2(m_word);
           std::fread(&m_word, sizeof(uint64_t), 1, m_file);
           m_amcdata->setGEMeventHeader(m_word);
+        printf("GEM EVENT HEADER\n");
+        printf("%016llX\n", m_word);
           // fill the geb data here
           std::cout << "GDcount = " << m_amcdata->GDcount() << std::endl;
           for (unsigned short j = 0; j < m_amcdata->GDcount(); j++){
             GEBdata * m_gebdata = new GEBdata();
             std::fread(&m_word, sizeof(uint64_t), 1, m_file);
             m_gebdata->setChamberHeader(m_word);
+        printf("GEM CHAMBER HEADER\n");
+        printf("%016llX\n", m_word);
             // fill the vfat data here
             std::cout << "Number of VFAT words " << m_gebdata->Vwh() << std::endl;
             int m_nvb = m_gebdata->Vwh() / 3; // number of VFAT2 blocks. Eventually add here sanity check
@@ -138,23 +156,26 @@ class GEMUnpacker
   private:
     std::FILE *m_file;
     uint64_t m_word;
+    uint32_t m_word32;
     bool type;
     AMC13Event * m_AMC13Event;
     std::string ofilename;
+    std::string m_isFedKit;
 };
  
 int main (int argc, char** argv)
 {
   std::cout << "[GEMUnpacker]: ---> Main()" << std::endl;
-  if (argc<2) 
+  if (argc<3) 
   {
-    std::cout << "Please provide input filename and conversion type" << std::endl;
-      //cout << "Usage: <path>/gtc inputFile.dat outputFile.root slot_config.csv" << endl;
-      return 0;
+    std::cout << "Please provide input filename and source type" << std::endl;
+    std::cout << "Usage: <path>/unpacker ifile ferol(sdram)" << std::endl;
+    return 0;
   }
   std::string ifile   = argv[1];
+  std::string isFedKit = argv[2];
 
-  GEMUnpacker * m_unpacker = new GEMUnpacker(ifile);
+  GEMUnpacker * m_unpacker = new GEMUnpacker(ifile, isFedKit);
   m_unpacker->unpack();
   delete m_unpacker;
 }

@@ -111,6 +111,10 @@ private:
   GEB_histogram * m_gebH;
   VFAT_histogram * m_vfatH;
 
+  int m_RunType;
+  int m_deltaV;
+  int m_Latency;
+
   void fetchHardware()
   {
     try{
@@ -183,7 +187,7 @@ private:
         m_amcH = new AMC_histogram(ofilename, gDirectory->mkdir(diramc), aslot_ch);
         m_amcH->bookHistograms();
         if (DEBUG) std::cout << std::dec << "[gemTreeReader]: AMC13 AMCs size " << m_amc13H->amcsH().size() << std::endl;
-
+        m_RunType = v_amc[a_c].Rtype();  //obtain the run type 
         g_c=0;
 
 	      /* LOOP THROUGH GEBs */
@@ -282,6 +286,10 @@ private:
           v_gebH = v_amcH[a_c].gebsH();
           //AMC_histogram * t_amcH = &(m_amc13H->amcsH().at(a_c));
           v_amcH[a_c].fillHistograms(&*a);
+          if (m_RunType){
+            m_deltaV = a->Param2() - a->Param3();
+            m_Latency = a->Param1();
+          }
           g_c=0;
 	        /* LOOP THROUGH GEBs */
           for(auto g=v_geb.begin(); g!=v_geb.end();g++){
@@ -296,7 +304,7 @@ private:
               v_vfatH = v_gebH[gebH_->second].vfatsH();
             }
             else {
-                std::cout << "Not found\n";
+                std::cout << "GEB Not found\n";
                 continue;
             }
 	          /* LOOP THROUGH VFATs */
@@ -313,9 +321,12 @@ private:
               auto vfatH_ = vfat_map.find(vID_ch);
               if(vfatH_ != vfat_map.end()) {
                 v_vfatH[vfatH_->second].fillHistograms(&*v);
+                if (m_RunType){
+                  v_vfatH[vfatH_->second].fillScanHistograms(&*v, m_RunType, m_deltaV, m_Latency);
+                }
               }
               else {
-                  std::cout << "Not found\n";
+                  std::cout << "VFAT Not found\n";
               }
             } /* END VFAT LOOP */
           } /* END GEB LOOP */
