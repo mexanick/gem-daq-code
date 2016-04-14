@@ -74,18 +74,18 @@ class VFAT_histogram: public Hardware_histogram
       }// end loop on channels
     }
   private:
-    TH1F* b1010;
-    TH1F* BC;
-    TH1F* b1100;
-    TH1F* EC;
-    TH1F* Flag;
-    TH1F* b1110;
-    TH1F* ChipID;
-    TH1F* FiredChannels;
-    TH1F* crc_difference;
-    TH1F* thresholdScan[NCHANNELS]; 
+    TH1F* b1010;            ///<Histogram for control bit 1010
+    TH1F* BC;               ///<Histogram for Bunch Crossing Number
+    TH1F* b1100;            ///<Histogram for control bit 1100
+    TH1F* EC;               ///<Histogram for Event Counter
+    TH1F* Flag;             ///<Histogram for Control Flags
+    TH1F* b1110;            ///<Histogram for contorl bit 1110
+    TH1F* ChipID;           ///<Histogram for Chip ID
+    TH1F* FiredChannels;    ///<Histogram for Fired Channels (uses lsData and fmData)
+    TH1F* crc_difference;   ///<Histogram for difference of crc and recalculated crc
+    TH1F* thresholdScan[NCHANNELS]; ///<Histogram for Threshold Scan
 
-    uint16_t vfatBlockWords[12];
+    uint16_t vfatBlockWords[12];   ///<Array of uint16_t used for setVFATBlockWords
 
     //!This puts the VFAT data in an array of uint16_t to be used for the crc check
     void setVFATBlockWords(VFATdata * vfat_)
@@ -133,3 +133,4 @@ class VFAT_histogram: public Hardware_histogram
        }
     
 };
+

@@ -5,6 +5,7 @@
 class AMC13_histogram: public Hardware_histogram
 {
   public:
+    //!Constructor calls the base contructor of Hardware_histogram. Requiresa string for filename, directory, and another string.
     AMC13_histogram(const std::string & filename, TDirectory * dir, const std::string & hwid):Hardware_histogram(filename, dir, hwid){}//call base constructor
 
     //!Books the histograms for AMC13 data
@@ -60,19 +61,19 @@ class AMC13_histogram: public Hardware_histogram
     std::vector<AMC_histogram> amcsH(){return m_amcsH;}
   private:
     std::vector<AMC_histogram> m_amcsH;   ///<A vector of AMC_histogram
-    TH1F* control_bit5;                   
-    TH1F* control_bitA;                   
-    TH1F* Evt_ty;
-    TH1F* LV1_id;
-    TH1F* BX_id;
-    TH1F* Source_id;
-    TH1F* CalTyp;
-    TH1F* nAMC;
-    TH1F* OrN;
-    TH1F* CRC_amc13;
-    TH1F* Blk_Not;
-    TH1F* LV1_idT;
-    TH1F* BX_idT;
-    TH1F* EvtLength;
-    TH1F* CRC_cdf;
+    TH1F* control_bit5;                   ///<Histogram for control bit 5
+    TH1F* control_bitA;                   ///<Histogram for control bit A
+    TH1F* Evt_ty;                         ///<Histogram for Evt_ty
+    TH1F* LV1_id;                         ///<Histogram for LV1_id
+    TH1F* BX_id;                          ///<Histogram for BX_id
+    TH1F* Source_id;                      ///<Histogram for Source_id
+    TH1F* CalTyp;                         ///<Histogram for CalTyp
+    TH1F* nAMC;                           ///<Histogram for nAMC
+    TH1F* OrN;                            ///<Histogram for OrN
+    TH1F* CRC_amc13;                      ///<Histogram for CRC_amc13
+    TH1F* Blk_Not;                        ///<Histogram for Blk_Not
+    TH1F* LV1_idT;                        ///<Histogram for LV1_idT
+    TH1F* BX_idT;                         ///<Histogram for BX_idT
+    TH1F* EvtLength;                      ///<Histogram for EvtLength
+    TH1F* CRC_cdf;                        ///<Histogram for CRC_cdf
 };
