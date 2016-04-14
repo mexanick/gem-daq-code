@@ -5,7 +5,7 @@
 class AMC13_histogram: public Hardware_histogram
 {
   public:
-    //!Constructor calls the base contructor of Hardware_histogram. Requiresa string for filename, directory, and another string.
+    //!Constructor calls the base contructor of Hardware_histogram. Requires a string for filename, directory, and another string.
     AMC13_histogram(const std::string & filename, TDirectory * dir, const std::string & hwid):Hardware_histogram(filename, dir, hwid){}//call base constructor
 
     //!Books the histograms for AMC13 data

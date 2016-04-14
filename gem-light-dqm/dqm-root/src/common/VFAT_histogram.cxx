@@ -26,6 +26,8 @@ class VFAT_histogram: public Hardware_histogram
       ChipID   = new TH1F("ChipID", "Chip ID", 4095,  0x0 , 0xfff);
       FiredChannels   = new TH1F("FiredChannels", "FiredChannels", 128,  0, 128);
       crc_difference = new TH1F("crc_difference", "difference between crc and crc_calc", 0xffff,  -32768 , 32768);
+      latencyScan = new TH1F("latencyScan", "Latency Scan", 255,  0, 255);
+      thresholdScanChip = new TH1F("thresholdScan","Threshold Scan",256,0,256);
       TDirectory * scandir = gDirectory->mkdir("Threshold_Scans");
       scandir->cd();
       for (int i = 0; i < 128; i++){
@@ -59,17 +61,27 @@ class VFAT_histogram: public Hardware_histogram
         }
       }
     }
-
     //!Fills the histograms for the Threshold Scans
-    void fillScanHistograms(VFATdata * vfat, int runtype, int deltaV){
+    void fillScanHistograms(VFATdata * vfat, int runtype, int deltaV, int latency){
+      bool channelFired = false;
       for (int i = 0; i < 128; i++){
         uint16_t chan0xf = 0;
         if (i < 64){
           chan0xf = ((vfat->lsData() >> i) & 0x1);
-          if(chan0xf) thresholdScan[i]->Fill(deltaV);
+          if(chan0xf) {
+            thresholdScan[i]->Fill(deltaV);
+            channelFired = true;
+          }
         } else {
           chan0xf = ((vfat->msData() >> (i-64)) & 0x1);
-          if(chan0xf) thresholdScan[i]->Fill(deltaV);
+          if(chan0xf) {
+            thresholdScan[i]->Fill(deltaV);
+            channelFired = true;
+          }
+        }
+        if (channelFired) {
+          latencyScan->Fill(latency);
+          thresholdScanChip->Fill(deltaV);
         }
       }// end loop on channels
     }
@@ -84,6 +96,8 @@ class VFAT_histogram: public Hardware_histogram
     TH1F* FiredChannels;    ///<Histogram for Fired Channels (uses lsData and fmData)
     TH1F* crc_difference;   ///<Histogram for difference of crc and recalculated crc
     TH1F* thresholdScan[NCHANNELS]; ///<Histogram for Threshold Scan
+    TH1F* latencyScan;
+    TH1F* thresholdScanChip;
 
     uint16_t vfatBlockWords[12];   ///<Array of uint16_t used for setVFATBlockWords
 
@@ -131,6 +145,5 @@ class VFAT_histogram: public Hardware_histogram
          }
          return(crc_temp);
        }
-    
 };
 

@@ -121,27 +121,33 @@ private:
   //!Fetches data from AMC13, AMC, GEB, and VFAT and puts them into vectors
   void fetchHardware()
   {
-    TTree *tree = (TTree*)ifile->Get("GEMtree");
-    Event *event = new Event();
-    TBranch *branch = tree->GetBranch("GEMEvents");
-    branch->SetAddress(&event);
-    Int_t nentries = tree->GetEntries();
-    branch->GetEntry(0);
-    v_amc13 = event->amc13s();
-    for(auto a13 = v_amc13.begin(); a13!= v_amc13.end(); a13++){
-      v_amc = a13->amcs();
-      for(auto a=v_amc.begin(); a!=v_amc.end(); a++){
-        v_geb = a->gebs();
-        for(auto g=v_geb.begin(); g!=v_geb.end();g++){
-          v_vfat=g->vfats();
-        }
+    try{
+      TTree *tree = (TTree*)ifile->Get("GEMtree");
+      Event *event = new Event();
+      TBranch *branch = tree->GetBranch("GEMEvents");
+      branch->SetAddress(&event);
+      Int_t nentries = tree->GetEntries();
+      branch->GetEntry(0);
+      v_amc13 = event->amc13s();
+      for(auto a13 = v_amc13.begin(); a13!= v_amc13.end(); a13++){
+	v_amc = a13->amcs();
+	for(auto a=v_amc.begin(); a!=v_amc.end(); a++){
+	  v_geb = a->gebs();
+	  for(auto g=v_geb.begin(); g!=v_geb.end();g++){
+	    v_vfat=g->vfats();
+	  }
+	}
       }
+      if (DEBUG) std::cout<< "[gemTreeReader]: " << "Number of TTree entries: " << nentries << "\n";
+      if (DEBUG) std::cout<< "[gemTreeReader]: " << "Number of AMC13s: " << v_amc13.size()<< "\n";
+      if (DEBUG) std::cout<< "[gemTreeReader]: " << "Number of AMCs: " << v_amc.size()<< "\n";
+      if (DEBUG) std::cout<< "[gemTreeReader]: " << "Number of GEBs: " << v_geb.size()<< "\n";
+      if (DEBUG) std::cout<< "[gemTreeReader]: " << "Number of VFATs: " << v_vfat.size()<< "\n";
     }
-    if (DEBUG) std::cout<< "[gemTreeReader]: " << "Number of TTree entries: " << nentries << "\n";
-    if (DEBUG) std::cout<< "[gemTreeReader]: " << "Number of AMC13s: " << v_amc13.size()<< "\n";
-    if (DEBUG) std::cout<< "[gemTreeReader]: " << "Number of AMCs: " << v_amc.size()<< "\n";
-    if (DEBUG) std::cout<< "[gemTreeReader]: " << "Number of GEBs: " << v_geb.size()<< "\n";
-    if (DEBUG) std::cout<< "[gemTreeReader]: " << "Number of VFATs: " << v_vfat.size()<< "\n";
+    catch(...){
+      std::cout<< "[gemTreeReader]: " << "No GEMtree in input raw file!" << std::endl;
+      return;
+    }
   }
 
   //!Creates the subdirectories for AMC13, AMC, GEB, and VFAT and books the histograms
@@ -288,7 +294,11 @@ private:
           v_gebH = v_amcH[a_c].gebsH();
           //AMC_histogram * t_amcH = &(m_amc13H->amcsH().at(a_c));
           v_amcH[a_c].fillHistograms(&*a);
-          if (m_RunType){m_deltaV = a->Param2() - a->Param3();}
+
+          if (m_RunType){
+            m_deltaV = a->Param2() - a->Param3();
+            m_Latency = a->Param1();
+          }
           g_c=0;
           /* LOOP THROUGH GEBs */
           for(auto g=v_geb.begin(); g!=v_geb.end();g++){
@@ -317,14 +327,11 @@ private:
               strcpy(buff,gID_ch);
               strcat(buff,vID_ch);
               strcpy(vID_ch,buff);
-              std::cout << "VID " << vID_ch << std::endl;
               auto vfatH_ = vfat_map.find(vID_ch);
               if(vfatH_ != vfat_map.end()) {
                 v_vfatH[vfatH_->second].fillHistograms(&*v);
-                //v_vfatH[0].fillHistograms(&*v);
                 if (m_RunType){
-                  v_vfatH[vfatH_->second].fillScanHistograms(&*v, m_RunType, m_deltaV);
-                  //v_vfatH[0].fillScanHistograms(&*v, m_RunType, m_deltaV);
+                  v_vfatH[vfatH_->second].fillScanHistograms(&*v, m_RunType, m_deltaV, m_Latency);
                 }
               }
               else {
