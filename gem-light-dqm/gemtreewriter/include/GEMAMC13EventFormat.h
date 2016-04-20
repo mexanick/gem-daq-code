@@ -161,10 +161,10 @@ class GEBdata
      */
     void setChamberHeader(uint64_t word)
     {
-      m_ZeroSup = 0x00ffffff & (word >> 40);        /*!<Zero Suppression*/
-      m_InputID = 0b00011111 & (word >> 35);        /*!<GLIB Input ID*/
-      m_Vwh = 0x0fff & (word >> 23);                /*!<VFAT word count*/
-      m_ErrorC = 0b0001111111111111 & (word);    /*!<Thirteen Flags*/
+      m_ZeroSup = 0x00ffffff & (word >> 40);        /*!Zero Suppression*/
+      m_InputID = 0b00011111 & (word >> 35);        /*!GLIB Input ID*/
+      m_Vwh = 0x0fff & (word >> 23);                /*!VFAT word count*/
+      m_ErrorC = 0b0001111111111111 & (word);    /*!Thirteen Flags*/
       for(int i=0; i<13; ++i)
       {
         v_GEBflags.push_back(0x01 & (m_ErrorC >> i));
@@ -191,10 +191,10 @@ class GEBdata
     */
     void setChamberTrailer(uint64_t word)
     {
-      m_OHCRC = word >> 48;           /*!<OH CRC*/
-      m_Vwt = 0x0fff & (word >> 36);  /*!<VFAT word count*/
-      m_InFu = 0x0f & (word >> 35);   /*!<InFIFO underflow*/
-      m_Stuckd = 0x01 & (word >> 34); /*!<Stuck data*/
+      m_OHCRC = word >> 48;           /*!OH CRC*/
+      m_Vwt = 0x0fff & (word >> 36);  /*!VFAT word count*/
+      m_InFu = 0x0f & (word >> 35);   /*!InFIFO underflow*/
+      m_Stuckd = 0x01 & (word >> 34); /*!Stuck data*/
     }
 
     uint32_t ZeroSup()  {return m_ZeroSup;}   ///<Returns Zero Suppression flags
@@ -327,10 +327,10 @@ class AMCdata
     */
     void setAMCheader1(uint64_t word)
     {
-      m_AMCnum = 0x0f & (word >> 56);     /*!<AMC number*/
-      m_L1A = 0x00ffffff & (word >> 32);  /*!<L1A ID */
-      m_BX = 0x0fff & (word >> 20);       /*!<BX ID */
-      m_Dlength = 0x000fffff & word;      /*!<Data Length */
+      m_AMCnum = 0x0f & (word >> 56);     /*!AMC number*/
+      m_L1A = 0x00ffffff & (word >> 32);  /*!L1A ID */
+      m_BX = 0x0fff & (word >> 20);       /*!BX ID */
+      m_Dlength = 0x000fffff & word;      /*!Data Length */
     }
     
     //!Reads the word for the AMC Header 2
@@ -339,12 +339,12 @@ class AMCdata
     */
     void setAMCheader2(uint64_t word)
     {
-      m_FV = 0x0f & (word >> 60);     /*!<Format Version */
-      m_Rtype = 0x0f & (word >> 56);  /*!<Run Type */
-      m_Param1 = word >> 48;          /*!<Run Param 1 */
-      m_Param2 = word >> 40;          /*!<Run Param 2 */
-      m_Param3 = word >> 32;          /*!<Run Param 3 */
-      m_Onum = word >> 16;            /*!<Orbit Number */
+      m_FV = 0x0f & (word >> 60);     /*!Format Version */
+      m_Rtype = 0x0f & (word >> 56);  /*!Run Type */
+      m_Param1 = word >> 48;          /*!Run Param 1 */
+      m_Param2 = word >> 40;          /*!Run Param 2 */
+      m_Param3 = word >> 32;          /*!Run Param 3 */
+      m_Onum = word >> 16;            /*!Orbit Number */
       m_BID = word;                   /*!Board ID */
     }
     
@@ -354,10 +354,10 @@ class AMCdata
     */
     void setGEMeventHeader(uint64_t word)
     {
-      m_GEMDAV = 0x00ffffff & (word >> 40);   /*!<GEM DAV list*/
-      m_Bstatus = 0x00ffffff & (word >> 16);  /*!<Buffer Status*/
-      m_GDcount = 0b00011111 & (word >> 11);  /*!<GEM DAV count*/
-      m_Tstate = 0b00000111 & word;           /*!<TTS state*/
+      m_GEMDAV = 0x00ffffff & (word >> 40);   /*!GEM DAV list*/
+      m_Bstatus = 0x00ffffff & (word >> 16);  /*!Buffer Status*/
+      m_GDcount = 0b00011111 & (word >> 11);  /*!GEM DAV count*/
+      m_Tstate = 0b00000111 & word;           /*!TTS state*/
     }
 
     //!Reads the word for the GEM Event Trailer
@@ -366,8 +366,8 @@ class AMCdata
     */
     void setGEMeventTrailer(uint64_t word)
     {
-      m_ChamT = 0x00ffffff & (word >> 40);  /*!<Chamber Timeout*/
-      m_OOSG = 0b00000001 & (word >> 39);   /*!<OOS GLIB*/
+      m_ChamT = 0x00ffffff & (word >> 40);  /*!Chamber Timeout*/
+      m_OOSG = 0b00000001 & (word >> 39);   /*!OOS GLIB*/
     }
 
     //!Reads the word for the AMC Trailer
@@ -408,7 +408,7 @@ class AMCdata
     //!Returns a vector of GEB data
     std::vector<GEBdata> gebs(){return gebd;}
 };
-
+//!A class for AMC13 data
 class AMC13Event
 {
   private:
