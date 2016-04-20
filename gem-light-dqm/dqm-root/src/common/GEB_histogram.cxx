@@ -69,9 +69,9 @@ class GEB_histogram: public Hardware_histogram
     std::vector<VFAT_histogram> m_vfatsH;    ///<A vector of VFAT_histogram 
     TH1F* ZeroSup;                           ///<Histogram for Zero Suppression flags
     TH1F* InputID;                           ///<Histogram for GLIB input ID
-    TH1F* Vwh;                               ///<Histogram for VFAT word count
+    TH1F* Vwh;                               ///<Histogram for VFAT word count (header)
     TH1I* Errors;                            ///<Histogram for thirteen flags in GEM Chamber Header
     TH1I* Warnings;                          ///<Histogram for Warnings (InFIFO underflow, Stuck Data)
     TH1F* OHCRC;                             ///<Histogram for OH CRC
-    TH1F* Vwt;
+    TH1F* Vwt;                               ///<Histogram for VFAT word count (trailer)
 };

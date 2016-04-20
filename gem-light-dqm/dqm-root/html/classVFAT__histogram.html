@@ -51,15 +51,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0bc4f1417a7fd03664d1184aa3fe7023"></a><!-- doxytag: member="VFAT_histogram::VFAT_histogram" ref="a0bc4f1417a7fd03664d1184aa3fe7023" args="(const std::string &amp;filename, TDirectory *dir, const std::string &amp;hwid)" -->
-&nbsp;</td><td class="memItemRight" valign="bottom"><b>VFAT_histogram</b> (const std::string &amp;filename, TDirectory *dir, const std::string &amp;hwid)</td></tr>
+&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVFAT__histogram.html#a0bc4f1417a7fd03664d1184aa3fe7023">VFAT_histogram</a> (const std::string &amp;filename, TDirectory *dir, const std::string &amp;hwid)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Calls the base constructor. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2ea0d916233f75419cebbfbcaba24c8a"></a><!-- doxytag: member="VFAT_histogram::VFAT_histogram" ref="a2ea0d916233f75419cebbfbcaba24c8a" args="(VFAT_histogram *vH)" -->
-&nbsp;</td><td class="memItemRight" valign="bottom"><b>VFAT_histogram</b> (<a class="el" href="classVFAT__histogram.html">VFAT_histogram</a> *vH)</td></tr>
+&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVFAT__histogram.html#a2ea0d916233f75419cebbfbcaba24c8a">VFAT_histogram</a> (<a class="el" href="classVFAT__histogram.html">VFAT_histogram</a> *vH)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Calls the base constructor. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVFAT__histogram.html#a969356fad0068d3c352a61fa6433a5fe">bookHistograms</a> ()</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Books histograms for VFAT data.  <a href="#a969356fad0068d3c352a61fa6433a5fe"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVFAT__histogram.html#af3739bb12287a049e7670e3aff4fd240">fillHistograms</a> (VFATdata *vfat)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Fills histograms for VFAT data.  <a href="#af3739bb12287a049e7670e3aff4fd240"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9df578d7363f2cf755702bcfc47a1e6a"></a><!-- doxytag: member="VFAT_histogram::fillScanHistograms" ref="a9df578d7363f2cf755702bcfc47a1e6a" args="(VFATdata *vfat, int runtype, int deltaV)" -->
-void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVFAT__histogram.html#a9df578d7363f2cf755702bcfc47a1e6a">fillScanHistograms</a> (VFATdata *vfat, int runtype, int deltaV)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5ab3a236e44030aa2b85de6fab0dc758"></a><!-- doxytag: member="VFAT_histogram::fillScanHistograms" ref="a5ab3a236e44030aa2b85de6fab0dc758" args="(VFATdata *vfat, int runtype, int deltaV, int latency)" -->
+void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVFAT__histogram.html#a5ab3a236e44030aa2b85de6fab0dc758">fillScanHistograms</a> (VFATdata *vfat, int runtype, int deltaV, int latency)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Fills the histograms for the Threshold Scans. <br/></td></tr>
 <tr><td colspan="2"><h2>Private Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a645afbcb5e84042cf03211fbf12323ff"></a><!-- doxytag: member="VFAT_histogram::setVFATBlockWords" ref="a645afbcb5e84042cf03211fbf12323ff" args="(VFATdata *vfat_)" -->
@@ -102,6 +104,10 @@ TH1F *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="cl
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3fd1d14f50244dcb64171c75b074c009"></a><!-- doxytag: member="VFAT_histogram::thresholdScan" ref="a3fd1d14f50244dcb64171c75b074c009" args="[NCHANNELS]" -->
 TH1F *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVFAT__histogram.html#a3fd1d14f50244dcb64171c75b074c009">thresholdScan</a> [NCHANNELS]</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Histogram for Threshold Scan. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adac5c1d79de09313b9e3b05a7d05346c"></a><!-- doxytag: member="VFAT_histogram::latencyScan" ref="adac5c1d79de09313b9e3b05a7d05346c" args="" -->
+TH1F *&nbsp;</td><td class="memItemRight" valign="bottom"><b>latencyScan</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3391f4fe534fbdac8b45fb76b42ca765"></a><!-- doxytag: member="VFAT_histogram::thresholdScanChip" ref="a3391f4fe534fbdac8b45fb76b42ca765" args="" -->
+TH1F *&nbsp;</td><td class="memItemRight" valign="bottom"><b>thresholdScanChip</b></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1971f1218cd78e9d3e807c3ddcdba199"></a><!-- doxytag: member="VFAT_histogram::vfatBlockWords" ref="a1971f1218cd78e9d3e807c3ddcdba199" args="[12]" -->
 uint16_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVFAT__histogram.html#a1971f1218cd78e9d3e807c3ddcdba199">vfatBlockWords</a> [12]</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Array of uint16_t used for setVFATBlockWords. <br/></td></tr>
@@ -168,7 +174,7 @@ uint16_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on 14 Apr 2016 by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 20 Apr 2016 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

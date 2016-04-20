@@ -18,7 +18,9 @@ class VFATdata
     bool     fisBlockGood;             ///<Shows if block is good (control bits, chip ID and CRC checks)
   
   public:
+    //!Empty constructor. Functions used to assign data members.
     VFATdata(){}
+    //!Constructor requiring arguments.
     VFATdata(const uint8_t &b1010_, 
             const uint16_t &BC_,
             const uint8_t &b1100_, 
@@ -45,6 +47,7 @@ class VFATdata
         fcrc_calc(crc_calc_),
         fSlotNumber(SlotNumber_),
         fisBlockGood(isBlockGood_){}
+    //!Destructor for the class
     ~VFATdata(){}
 
     //!Read first word from the block.
@@ -135,7 +138,9 @@ class GEBdata
 		  uint8_t m_Stuckd; 
 
   public:
+    //!Empty constructor. Functions used to assign data members.
     GEBdata(){};
+    //!Constrcutor requirng arguments.
     GEBdata(const uint32_t &ZeroSup_, 
               const uint8_t &InputID_, 
               const uint16_t &Vwh_, 
@@ -151,7 +156,8 @@ class GEBdata
           m_OHCRC(OHCRC_),                                    
           m_Vwt(Vwt_),                             
           m_InFu(InFu_),                                   
-          m_Stuckd(Stuckd_){}         
+          m_Stuckd(Stuckd_){}  
+    //!Destructor for the class.
     ~GEBdata(){vfatd.clear();}
 
     // need to include all the flags
@@ -282,8 +288,9 @@ class AMCdata
       uint32_t m_DlengthT;
 	
   public:
-    //!Constructor for the class
+    //!Empty constructor. Functions fill the data members.
     AMCdata(){};
+    //!Constructor requiring arguments.
     AMCdata(const uint8_t &AMCnum_, 
               const uint32_t &L1A_,
               const uint16_t &BX_, 
@@ -441,8 +448,9 @@ class AMC13Event
     uint16_t m_CRC_cdf;
 
   public:
-
+    //!Empty constructor. Functions fill data members.
     AMC13Event(){}
+    //!Destructor for the class.
     ~AMC13Event(){m_AMC_size.clear(); m_Blk_No.clear(); m_AMC_No.clear(); m_BoardID.clear(); m_amcs.clear();}
 
     int nAMC()            {return unsigned(m_nAMC);}
@@ -463,7 +471,7 @@ class AMC13Event
     uint16_t CRC_cdf()    {return m_CRC_cdf;}
 
     std::vector<AMCdata> amcs(){return m_amcs;}
-    //*** Set the CDF header. Not full header implemented yet. Doc:http://ohm.bu.edu/~hazen/CMS/AMC13/AMC13DataFormatDrawingv3.pdf
+    //! Set the CDF header. Not full header implemented yet. Doc:http://ohm.bu.edu/~hazen/CMS/AMC13/AMC13DataFormatDrawingv3.pdf
     void setCDFHeader(uint64_t word)
     {
       m_cb5 = 0x0f & (word >> 60);

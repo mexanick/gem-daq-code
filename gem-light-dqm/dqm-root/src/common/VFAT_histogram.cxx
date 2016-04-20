@@ -7,7 +7,9 @@
 class VFAT_histogram: public Hardware_histogram
 {
   public:
+    //!Calls the base constructor
     VFAT_histogram(const std::string & filename, TDirectory * dir, const std::string & hwid):Hardware_histogram(filename, dir, hwid){}//call base constructor
+    //!Calls the base constructor
     VFAT_histogram(VFAT_histogram * vH):Hardware_histogram("dummy", vH->m_dir, vH->m_HWID){}//call base constructor
     ~VFAT_histogram(){}
 

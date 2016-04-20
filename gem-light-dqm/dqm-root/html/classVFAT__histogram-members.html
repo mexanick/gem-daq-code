@@ -55,13 +55,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr class="memlist"><td><a class="el" href="classVFAT__histogram.html#a18b8e930779b8d517b41fd7661d56022">crc_difference</a></td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [private]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classVFAT__histogram.html#a858bb241f64ec4c286ae94b56c74e9d2">EC</a></td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [private]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classVFAT__histogram.html#af3739bb12287a049e7670e3aff4fd240">fillHistograms</a>(VFATdata *vfat)</td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [inline]</code></td></tr>
-  <tr class="memlist"><td><a class="el" href="classVFAT__histogram.html#a9df578d7363f2cf755702bcfc47a1e6a">fillScanHistograms</a>(VFATdata *vfat, int runtype, int deltaV)</td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [inline]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classVFAT__histogram.html#a5ab3a236e44030aa2b85de6fab0dc758">fillScanHistograms</a>(VFATdata *vfat, int runtype, int deltaV, int latency)</td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [inline]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classVFAT__histogram.html#a89c2cd8ce9e57387688939ec1354da16">FiredChannels</a></td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [private]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classVFAT__histogram.html#acc35d144ff8a5f28ac4215ea1a303e91">Flag</a></td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [private]</code></td></tr>
+  <tr bgcolor="#f0f0f0"><td><b>latencyScan</b> (defined in <a class="el" href="classVFAT__histogram.html">VFAT_histogram</a>)</td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [private]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classVFAT__histogram.html#a645afbcb5e84042cf03211fbf12323ff">setVFATBlockWords</a>(VFATdata *vfat_)</td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [inline, private]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classVFAT__histogram.html#a3fd1d14f50244dcb64171c75b074c009">thresholdScan</a></td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [private]</code></td></tr>
-  <tr bgcolor="#f0f0f0"><td><b>VFAT_histogram</b>(const std::string &amp;filename, TDirectory *dir, const std::string &amp;hwid) (defined in <a class="el" href="classVFAT__histogram.html">VFAT_histogram</a>)</td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [inline]</code></td></tr>
-  <tr bgcolor="#f0f0f0"><td><b>VFAT_histogram</b>(VFAT_histogram *vH) (defined in <a class="el" href="classVFAT__histogram.html">VFAT_histogram</a>)</td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [inline]</code></td></tr>
+  <tr bgcolor="#f0f0f0"><td><b>thresholdScanChip</b> (defined in <a class="el" href="classVFAT__histogram.html">VFAT_histogram</a>)</td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [private]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classVFAT__histogram.html#a0bc4f1417a7fd03664d1184aa3fe7023">VFAT_histogram</a>(const std::string &amp;filename, TDirectory *dir, const std::string &amp;hwid)</td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [inline]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="classVFAT__histogram.html#a2ea0d916233f75419cebbfbcaba24c8a">VFAT_histogram</a>(VFAT_histogram *vH)</td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [inline]</code></td></tr>
   <tr class="memlist"><td><a class="el" href="classVFAT__histogram.html#a1971f1218cd78e9d3e807c3ddcdba199">vfatBlockWords</a></td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [private]</code></td></tr>
   <tr bgcolor="#f0f0f0"><td><b>~VFAT_histogram</b>() (defined in <a class="el" href="classVFAT__histogram.html">VFAT_histogram</a>)</td><td><a class="el" href="classVFAT__histogram.html">VFAT_histogram</a></td><td><code> [inline]</code></td></tr>
 </table></div>
@@ -79,7 +81,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr size="1"/><address style="text-align: right;"><small>Generated on 14 Apr 2016 by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 20 Apr 2016 by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>
