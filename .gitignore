@@ -8,6 +8,7 @@
 !*.h
 !*.gitignore
 !*.py
+!*.html
 # don't ignore CSS/JS etc
 !*.js
 !*.css
