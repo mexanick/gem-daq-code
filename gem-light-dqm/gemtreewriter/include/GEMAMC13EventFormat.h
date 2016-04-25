@@ -446,7 +446,18 @@ class AMC13Event
 
     int nAMC(){return unsigned(m_nAMC);}
     int LV1_id(){return unsigned(m_LV1_id);}
+    int cb5(){return unsigned(m_cb5);}
+    int Evt_ty(){return unsigned(m_Evt_ty);}
+    int BX_id(){return unsigned(m_BX_id);}
+    int Source_id(){return unsigned(m_Source_id);}
+    int CalTyp(){return unsigned(m_CalTyp);}
+    int Blk_NoT(){return unsigned(m_Blk_NoT);}
+    int LV1_idT(){return unsigned(m_LV1_idT);}
+    int BX_idT(){return unsigned(m_BX_idT);}
+    int cbA(){return unsigned(m_cb5);}
+    std::vector<uint8_t> AMC_Nos(){return m_AMC_No;}
     std::vector<AMCdata> amcs(){return m_amcs;}
+    //
     //*** Set the CDF header. Not full header implemented yet. Doc:http://ohm.bu.edu/~hazen/CMS/AMC13/AMC13DataFormatDrawingv3.pdf
     void setCDFHeader(uint64_t word)
     {

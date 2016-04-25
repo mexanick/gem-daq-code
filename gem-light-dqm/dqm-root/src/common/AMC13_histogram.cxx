@@ -16,17 +16,28 @@ class AMC13_histogram: public Hardware_histogram
       Source_id    = new TH1F("Source_id", "Source_id", 4095, 0x0, 0xfff);
       CalTyp       = new TH1F("CalTyp", "CalTyp", 15, 0x0, 0xf);
       nAMC         = new TH1F("nAMC", "nAMC", 12, 0, 12);
-      OrN          = new TH1F("OrN", "OrN", 0xffffffff, 0x0, 0xffffffff);// N bins overflow!!
-      CRC_amc13    = new TH1F("CRC_amc13", "CRC_amc13", 0xffffffff, 0x0, 0xffffffff);// N bins overflow!!
-      Blk_Not      = new TH1F("Blk_Not", "Blk_Not", 255, 0x0, 0xff);
+      //OrN          = new TH1F("OrN", "OrN", 0xffffffff, 0x0, 0xffffffff);// N bins overflow!!
+      //CRC_amc13    = new TH1F("CRC_amc13", "CRC_amc13", 0xffffffff, 0x0, 0xffffffff);// N bins overflow!!
+      Blk_NoT      = new TH1F("Blk_NoT", "Blk_NoT", 255, 0x0, 0xff);
       LV1_idT      = new TH1F("LV1_idT", "LV1_idT", 255, 0x0, 0xff);
       BX_idT       = new TH1F("BX_idT", "BX_idT", 4095, 0x0, 0xfff);
-      EvtLength    = new TH1F("EvtLength", "EvtLength", 0xffffff, 0x0, 0xffffff);
-      CRC_cdf      = new TH1F("CRC_cdf", "CRC_cdf", 0xffff, 0x0, 0xffff);
+      BX_diff      = new TH1F("BX_diff", "BX_diff", 8191, -4095, 4095);
+      //EvtLength    = new TH1F("EvtLength", "EvtLength", 0xffffff, 0x0, 0xffffff);
+      //CRC_cdf      = new TH1F("CRC_cdf", "CRC_cdf", 0xffff, 0x0, 0xffff);
     }
     void fillHistograms(AMC13Event *amc13){
       nAMC->Fill(amc13->nAMC());
+      control_bit5->Fill(amc13->cb5());
+      Evt_ty->Fill(amc13->Evt_ty());
       LV1_id->Fill(amc13->LV1_id());
+      BX_id->Fill(amc13->BX_id());
+      Source_id->Fill(amc13->Source_id());
+      CalTyp->Fill(amc13->CalTyp());
+      Blk_NoT->Fill(amc13->Blk_NoT());
+      LV1_idT->Fill(amc13->LV1_idT());
+      BX_idT->Fill(amc13->BX_idT());
+      control_bitA->Fill(amc13->cbA());
+      BX_diff->Fill(amc13->BX_idT()-amc13->BX_id());
     }
     void addAMCH(AMC_histogram amcH){m_amcsH.push_back(amcH);}
     std::vector<AMC_histogram> amcsH(){return m_amcsH;}
@@ -40,11 +51,12 @@ class AMC13_histogram: public Hardware_histogram
     TH1F* Source_id;
     TH1F* CalTyp;
     TH1F* nAMC;
-    TH1F* OrN;
-    TH1F* CRC_amc13;
-    TH1F* Blk_Not;
+    //TH1F* OrN;
+    //TH1F* CRC_amc13;
+    TH1F* Blk_NoT;
     TH1F* LV1_idT;
     TH1F* BX_idT;
-    TH1F* EvtLength;
-    TH1F* CRC_cdf;
+    TH1F* BX_diff;
+    //TH1F* EvtLength;
+    //TH1F* CRC_cdf;
 };
