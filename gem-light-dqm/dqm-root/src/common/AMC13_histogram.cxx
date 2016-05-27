@@ -39,7 +39,7 @@ class AMC13_histogram: public Hardware_histogram
     */
     void fillHistograms(AMC13Event *amc13){
       nAMC->Fill(amc13->nAMC());
-      control_bit5->Fill(amc13->cb5());
+      control_bit5->Fill(amc13->cb_5());
       Evt_ty->Fill(amc13->Evt_ty());
       LV1_id->Fill(amc13->LV1_id());
       BX_id->Fill(amc13->BX_id());
@@ -72,7 +72,7 @@ class AMC13_histogram: public Hardware_histogram
     TH1F* nAMC;                           ///<Histogram for nAMC
     //TH1F* OrN;                            ///<Histogram for OrN
     //TH1F* CRC_amc13;                      ///<Histogram for CRC_amc13
-    TH1F* Blk_Not;                        ///<Histogram for Blk_Not
+    TH1F* Blk_NoT;                        ///<Histogram for Blk_Not
     TH1F* LV1_idT;                        ///<Histogram for LV1_idT
     TH1F* BX_idT;                         ///<Histogram for BX_idT
     TH1F* BX_diff;

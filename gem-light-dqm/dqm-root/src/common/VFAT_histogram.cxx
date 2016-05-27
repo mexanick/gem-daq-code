@@ -57,6 +57,9 @@ class VFAT_histogram: public Hardware_histogram
       Flag->Fill(vfat->Flag());
       ChipID->Fill(vfat->ChipID());
       m_sn = std::stoi(m_HWID);
+      crc->Fill(vfat->crc());
+      setVFATBlockWords(vfat);
+      crc_calc->Fill(checkCRC(vfatBlockWords));
       SlotN->Fill(m_sn);
       this->readMap(m_sn);
       uint16_t chan0xf = 0;
