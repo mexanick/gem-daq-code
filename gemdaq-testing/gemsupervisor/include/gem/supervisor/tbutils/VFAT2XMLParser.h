@@ -1,5 +1,5 @@
-#ifndef gem_supervisor_tbutils_VFAT2XMLParser_h
-#define gem_supervisor_tbutils_VFAT2XMLParser_h
+#ifndef GEM_SUPERVISOR_TBUTILS_VFAT2XMLPARSER_H
+#define GEM_SUPERVISOR_TBUTILS_VFAT2XMLPARSER_H
 
 #include <string>
 
@@ -17,32 +17,29 @@ namespace gem {
       class HwVFAT2;
     }
   }
-	    
+
   namespace supervisor {
     namespace tbutils {
-      
+
       class VFAT2XMLParser
       {
-	
+
       public:
-	VFAT2XMLParser(const std::string& xmlFile,
-		       gem::hw::vfat::HwVFAT2* vfatDevice);
+        VFAT2XMLParser(const std::string& xmlFile,
+                       gem::hw::vfat::HwVFAT2* vfatDevice);
 
-	~VFAT2XMLParser();
+        ~VFAT2XMLParser();
 
-	void parseXMLFile();
-	void parseTURBO(xercesc::DOMNode * pNode);
-	void parseVFAT(xercesc::DOMNode * pNode);
+        void parseXMLFile();
+        void parseTURBO(xercesc::DOMNode * pNode);
+        void parseVFAT(xercesc::DOMNode * pNode);
       private:
-	std::string xmlFile_;
-	gem::hw::vfat::HwVFAT2* vfatDevice_;
+        std::string xmlFile_;
+        gem::hw::vfat::HwVFAT2* vfatDevice_;
       };
-      
-    }//end namespace gem::supervisor::tbutils
-    
-  }//end namespace gem::supervisor
-  
-}//end namespace gem
 
-#endif
-  
+    }  // namespace gem::supervisor::tbutils
+  }  // namespace gem::supervisor
+}  // namespace gem
+
+#endif  // GEM_SUPERVISOR_TBUTILS_VFAT2XMLPARSER_H
