@@ -1,15 +1,22 @@
 #include "AMC_histogram.cxx"
 #include "TH1.h"
 
+//!A class that creates histograms for AMC13 data
 class AMC13_histogram: public Hardware_histogram
 {
   public:
+    //!Constructor calls the base contructor of Hardware_histogram. Requires a string for filename, directory, and another string.
     AMC13_histogram(const std::string & filename, TDirectory * dir, const std::string & hwid):Hardware_histogram(filename, dir, hwid){}//call base constructor
+
+    //!Books the histograms for AMC13 data
+    /*!
+     This books histograms for the following data: control_bit5, control_bitA, Evt_ty, LV1_id, BX_id, Source_id, CalTyp, nAMC, OrN, CRC_amc13, Blk_Not, LV1_idT, BX_idT, EvtLength, and CRC_cdf
+    */
     void bookHistograms()
     {
       m_dir->cd();
       control_bit5 = new TH1F("Control_Bit5", "Control Bit 5", 15,  0x0 , 0xf);
-      control_bitA = new TH1F("Control_BitA", "Control Bit A", 15,  0x0 , 0xf);
+      control_bitA = new TH1F("Control_BitA", "Control Bit A", 15,  0x0 , 0xf); 
       Evt_ty       = new TH1F("Evt_ty", "Evt_ty", 15, 0x0, 0xf);
       LV1_id       = new TH1F("LV1_id", "LV1_id", 0xffffff, 0x0, 0xffffff);
       BX_id        = new TH1F("Bx_id", "Bx_id", 4095, 0x0, 0xfff);
@@ -25,6 +32,11 @@ class AMC13_histogram: public Hardware_histogram
       //EvtLength    = new TH1F("EvtLength", "EvtLength", 0xffffff, 0x0, 0xffffff);
       //CRC_cdf      = new TH1F("CRC_cdf", "CRC_cdf", 0xffff, 0x0, 0xffff);
     }
+    
+    //!Fills the histograms for AMC13 data
+    /*!
+     This fills histograms for the following data: control_bit5, control_bitA, Evt_ty, LV1_id, BX_id, Source_id, CalTyp, nAMC, Blk_Not, LV1_idT, BX_idT, EvtLength, and CRC_cdf
+    */
     void fillHistograms(AMC13Event *amc13){
       nAMC->Fill(amc13->nAMC());
       control_bit5->Fill(amc13->cb5());
@@ -38,25 +50,32 @@ class AMC13_histogram: public Hardware_histogram
       BX_idT->Fill(amc13->BX_idT());
       control_bitA->Fill(amc13->cbA());
       BX_diff->Fill(amc13->BX_idT()-amc13->BX_id());
+
     }
+
+     
+    //!Adds an AMC_histogram object to the m_amcsH vector
     void addAMCH(AMC_histogram amcH){m_amcsH.push_back(amcH);}
+
+    //!Returns the m_amcsH vector
     std::vector<AMC_histogram> amcsH(){return m_amcsH;}
   private:
-    std::vector<AMC_histogram> m_amcsH;
-    TH1F* control_bit5;
-    TH1F* control_bitA;
-    TH1F* Evt_ty;
-    TH1F* LV1_id;
-    TH1F* BX_id;
-    TH1F* Source_id;
-    TH1F* CalTyp;
-    TH1F* nAMC;
-    //TH1F* OrN;
-    //TH1F* CRC_amc13;
-    TH1F* Blk_NoT;
-    TH1F* LV1_idT;
-    TH1F* BX_idT;
+
+    std::vector<AMC_histogram> m_amcsH;   ///<A vector of AMC_histogram
+    TH1F* control_bit5;                   ///<Histogram for control bit 5
+    TH1F* control_bitA;                   ///<Histogram for control bit A
+    TH1F* Evt_ty;                         ///<Histogram for Evt_ty
+    TH1F* LV1_id;                         ///<Histogram for LV1_id
+    TH1F* BX_id;                          ///<Histogram for BX_id
+    TH1F* Source_id;                      ///<Histogram for Source_id
+    TH1F* CalTyp;                         ///<Histogram for CalTyp
+    TH1F* nAMC;                           ///<Histogram for nAMC
+    //TH1F* OrN;                            ///<Histogram for OrN
+    //TH1F* CRC_amc13;                      ///<Histogram for CRC_amc13
+    TH1F* Blk_Not;                        ///<Histogram for Blk_Not
+    TH1F* LV1_idT;                        ///<Histogram for LV1_idT
+    TH1F* BX_idT;                         ///<Histogram for BX_idT
     TH1F* BX_diff;
-    //TH1F* EvtLength;
-    //TH1F* CRC_cdf;
+    //TH1F* EvtLength;                      ///<Histogram for EvtLength
+    //TH1F* CRC_cdf;                        ///<Histogram for CRC_cdf
 };

@@ -1,10 +1,17 @@
 #include "GEB_histogram.cxx"
 #include "TH1.h"
 
+//!A class creating histograms for AMC data
 class AMC_histogram: public Hardware_histogram
 {
   public:
+    //!Constructor calls the base constructor of Hardware_histogram. Requires a string for filename, directory, and another string.
     AMC_histogram(const std::string & filename, TDirectory * dir, const std::string & hwid):Hardware_histogram(filename, dir, hwid){}//call base constructor
+
+    //!Books histograms for AMC data
+    /*!
+    This books histograms for the following data: AMC number, L1A number, Bunch Crossing ID, Data Length, Format Version, Run Type, Param 1, 2 and 3, Orbit Number, Board ID, GEM DAV list, Buffer Status, GEM DAV count, TTS state, Chamber Timeout, OOS GLIB sync, CRC, L1AT, and DlengthT
+    */
     void bookHistograms()
     {
       m_dir->cd();
@@ -29,6 +36,11 @@ class AMC_histogram: public Hardware_histogram
       L1AT       = new TH1F("L1AT", "L1AT", 0xffffff,  0x0, 0xffffff);
       DlengthT   = new TH1F("DlengthT", "DlengthT", 0xffffff,  0x0, 0xffffff);
     }
+
+     //!Fills the histograms for AMC data
+    /*!
+    This fills the histograms for the following data: AMC number, L1A number, Bunch Crossing ID, Data Length, Format Version, Run Type, Param 1, 2 and 3, Orbit Number, Board ID, GEM DAV list, Buffer Status, GEM DAV count, TTS state, Chamber Timeout, OOS GLIB sync, CRC, L1AT, and DlengthT
+    */
     void fillHistograms(AMCdata *amc){
       AMCnum->Fill(amc->AMCnum());
       L1A->Fill(amc->L1A());
@@ -57,28 +69,31 @@ class AMC_histogram: public Hardware_histogram
         if (binFired) ChamT->Fill(bin);
       }
     }
+    //!Adds a GEB_histogram object to m_gebsH vector
     void addGEBH(GEB_histogram gebH){m_gebsH.push_back(gebH);}
+    //!Returns the m_gebsH vector
     std::vector<GEB_histogram> gebsH(){return m_gebsH;}
   private:
-    std::vector<GEB_histogram> m_gebsH;
-    TH1F* AMCnum;
-    TH1F* L1A;
-    TH1F* BX;
-    TH1F* Dlength;
-    TH1F* FV;
-    TH1F* Rtype;
-    TH1F* Param1;
-    TH1F* Param2;
-    TH1F* Param3;
-    TH1F* Onum;
-    TH1F* BID;
-    TH1F* GEMDAV;
-    TH1F* Bstatus;
-    TH1F* GDcount;
-    TH1F* Tstate;
-    TH1F* ChamT;
-    TH1F* OOSG;
-    TH1D* CRC;
-    TH1F* L1AT;
-    TH1F* DlengthT;
+    std::vector<GEB_histogram> m_gebsH;   ///<A vector of GEB_histogram
+    TH1F* AMCnum;                         ///<Histogram for AMC number
+    TH1F* L1A;                            ///<Histogram for L1A number
+    TH1F* BX;                             ///<Histogram for Bunch Crossing ID
+    TH1F* Dlength;                        ///<Histogram for Data Length
+    TH1F* FV;                             ///<Histogram for Format Version
+    TH1F* Rtype;                          ///<Histogram for Run Type
+    TH1F* Param1;                         ///<Histogram for Parameter 1
+    TH1F* Param2;                         ///<Histogram for Parameter 2
+    TH1F* Param3;                         ///<Histogram for Parameter 3
+    TH1F* Onum;                           ///<Histogram for Orbit Number
+    TH1F* BID;                            ///<Histogram for Board ID
+    TH1F* GEMDAV;                         ///<Histogram for GEM DAV list
+    TH1F* Bstatus;                        ///<Histogram for Buffer Status
+    TH1F* GDcount;                        ///<Histogram for GEM DAV count
+    TH1F* Tstate;                         ///<Histogram for TTS state
+    TH1F* ChamT;                          ///<Histogram for Chamber Timeout
+    TH1F* OOSG;                           ///<Histogram for OOS GLIB
+    TH1D* CRC;                            ///<Histogram for CRC
+    TH1F* L1AT;                           ///<Histogram for L1AT
+    TH1F* DlengthT;                       ///<Histogram for Data Length (trailer)
 };
+

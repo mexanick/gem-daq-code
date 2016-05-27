@@ -1,10 +1,17 @@
 #include "VFAT_histogram.cxx"
 #include "TH1.h"
 
+//!A class that creates histograms for GEB data
 class GEB_histogram: public Hardware_histogram
 {
   public:
+    //!Constructor calls base constructor of Hardware_histogram. Requires a string for filename, directory, and another string.
     GEB_histogram(const std::string & filename, TDirectory * dir, const std::string & hwid):Hardware_histogram(filename, dir, hwid){}//call base constructor
+
+    //!Books histograms for GEB data
+    /*!
+     Books histograms for the following data: Zero Suppresion flags, GLIB input ID, VFAT word count (header), Errors and Warnings (Thirteen Flags, InFIFO underflow flag, Stuck data flag), OH CRC, VFAT word count (trailer)
+     */
     void bookHistograms()
     {
       m_dir->cd();
@@ -21,6 +28,13 @@ class GEB_histogram: public Hardware_histogram
       //OHCRC    = new TH1F("OHCRC", "OH CRC", 0xffff,  0x0 , 0xffff);
       Vwt      = new TH1F("Vwt", "VFAT word count", 4095,  0x0 , 0xfff);
     }
+
+
+    //!Fills histograms for GEB data
+    /*!
+     Fills the histograms for the following data: Zero Suppresion flags, GLIB input ID, VFAT word count (header), Errors and Warnings (Thirteen Flags, InFIFO underflow flag, Stuck data flag), OH CRC, VFAT word count (trailer)
+     */
+
     void fillHistograms(GEBdata * geb){
       //ZeroSup->Fill(geb->ZeroSup());
       InputID->Fill(geb->InputID());
@@ -46,16 +60,18 @@ class GEB_histogram: public Hardware_histogram
       binFired = (geb->InFu() & 0x1);
       if (binFired) Warnings->Fill(4);
     }
+
+    //!Adds a VFAT_histogram object to the m_vfatH vector
     void addVFATH(VFAT_histogram vfatH){m_vfatsH.push_back(vfatH);}
+    //!Returns the m_vfatsH vector
     std::vector<VFAT_histogram> vfatsH(){return m_vfatsH;}
   private:
-    std::vector<VFAT_histogram> m_vfatsH;
-    //TH1F* ZeroSup;
-    TH1F* InputID;
-    TH1F* Vwh;
-    TH1I* Errors;
-    TH1I* Warnings;
-    //TH1F* OHCRC;
-    TH1F* Vwt;
+    std::vector<VFAT_histogram> m_vfatsH;    ///<A vector of VFAT_histogram 
+    //TH1F* ZeroSup;                           ///<Histogram for Zero Suppression flags
+    TH1F* InputID;                           ///<Histogram for GLIB input ID
+    TH1F* Vwh;                               ///<Histogram for VFAT word count (header)
+    TH1I* Errors;                            ///<Histogram for thirteen flags in GEM Chamber Header
+    TH1I* Warnings;                          ///<Histogram for Warnings (InFIFO underflow, Stuck Data)
+    //TH1F* OHCRC;                             ///<Histogram for OH CRC
+    TH1F* Vwt;                               ///<Histogram for VFAT word count (trailer)
 };
-
