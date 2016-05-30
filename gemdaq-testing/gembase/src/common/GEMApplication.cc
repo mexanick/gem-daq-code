@@ -4,7 +4,7 @@
  * from this class and define and extend as necessary
  * structure borrowed from TCDS core, with nods to HCAL and EMU code
  * author: J. Sturdy
- * date: 
+ * date:
  */
 
 // GEMApplication.cc
@@ -19,12 +19,14 @@ gem::base::GEMApplication::GEMApplication(xdaq::ApplicationStub *stub)
   m_gemLogger(this->getApplicationLogger()),
   p_gemWebInterface(NULL),
   p_gemMonitor(     NULL),
-  m_runNumber(-1),
+  m_runNumber(0),
   m_runType("")
 
 {
-  INFO("called gem::base::GEMApplication constructor");
-  
+  DEBUG("GEMApplication::called gem::base::GEMApplication constructor");
+  INFO("GEMApplication GIT_VERSION:" << GIT_VERSION);
+  INFO("GEMApplication developer:"   << GEMDEVELOPER);
+
   p_gemWebInterface = new GEMWebApplication(this);
 
   try {
@@ -39,31 +41,61 @@ gem::base::GEMApplication::GEMApplication(xdaq::ApplicationStub *stub)
   } catch(xcept::Exception e) {
     XCEPT_RETHROW(xdaq::exception::Exception, "Failed to get GEM application information", e);
   }
-  
-  INFO("GEM application has infospace named " << p_appInfoSpace->name());
+
+  p_appInfoSpaceToolBox = std::shared_ptr<utils::GEMInfoSpaceToolBox>(new utils::GEMInfoSpaceToolBox(this,
+                                                                                                     p_appInfoSpace,
+                                                                                                     // p_gemMonitor,
+                                                                                                     false));
+  DEBUG("GEMApplication::application infospace has name: " << p_appInfoSpace->name());
+  DEBUG(m_urn);
+  toolbox::net::URN monISURN(m_urn+toolbox::toString(":monitoring-infospace"));
+  if (xdata::getInfoSpaceFactory()->hasItem(monISURN.toString())) {
+    DEBUG("GEMApplication::GEMApplication::infospace " << monISURN.toString() << " already exists, getting");
+    p_monitorInfoSpace = xdata::getInfoSpaceFactory()->get(monISURN.toString());
+  } else {
+    DEBUG("GEMApplication::GEMApplication::infospace " << monISURN.toString() << " does not exist, creating");
+    p_monitorInfoSpace = xdata::getInfoSpaceFactory()->create(monISURN.toString());
+  }
+  p_monitorInfoSpaceToolBox = std::shared_ptr<utils::GEMInfoSpaceToolBox>(new utils::GEMInfoSpaceToolBox(this,
+                                                                                                         p_monitorInfoSpace,
+                                                                                                         // p_gemMonitor,
+                                                                                                         false));
+  toolbox::net::URN cfgISURN(m_urn+toolbox::toString(":config-infospace"));
+  if (xdata::getInfoSpaceFactory()->hasItem(cfgISURN.toString())) {
+    DEBUG("GEMApplication::GEMApplication::infospace " << cfgISURN.toString() << " already exists, getting");
+    p_configInfoSpace = xdata::getInfoSpaceFactory()->get(cfgISURN.toString());
+  } else {
+    DEBUG("GEMApplication::GEMApplication::infospace " << cfgISURN.toString() << " does not exist, creating");
+    p_configInfoSpace = xdata::getInfoSpaceFactory()->create(cfgISURN.toString());
+  }
+  p_configInfoSpaceToolBox = std::shared_ptr<utils::GEMInfoSpaceToolBox>(new utils::GEMInfoSpaceToolBox(this,
+                                                                                                        p_configInfoSpace,
+                                                                                                        // p_gemMonitor,
+                                                                                                        false));
+
+  DEBUG("GEMApplication::GEM application has infospace named " << p_appInfoSpace->name());
   xgi::framework::deferredbind(this, this, &GEMApplication::xgiDefault, "Default"    );
   xgi::framework::deferredbind(this, this, &GEMApplication::xgiMonitor, "monitorView");
   xgi::framework::deferredbind(this, this, &GEMApplication::xgiExpert,  "expertView" );
+  // only used for passing data, does not need to bind to the in-framework model
+  xgi::bind(this, &GEMApplication::jsonUpdate, "jsonUpdate" );
 
   p_appInfoSpace->addListener(this, "urn:xdaq-event:setDefaultValues");
-  //what other listeners are available through this interface?
   p_appInfoSpace->addListener(this, "urn:xdata-event:ItemGroupRetrieveEvent");
   p_appInfoSpace->addListener(this, "urn:xdata-event:ItemGroupChangedEvent");
   p_appInfoSpace->addListener(this, "urn:xdata-event:ItemRetrieveEvent");
   p_appInfoSpace->addListener(this, "urn:xdata-event:ItemChangedEvent");
 
-  //how to have infospaces inside infospaces, or listeners on multiple infospaces
-  //p_configInfoSpace->addListener( this, "urn:xdaq-event:setDefaultValues");
-  //p_monitorInfoSpace->addListener(this, "urn:xdaq-event:setDefaultValues");
   p_appInfoSpace->fireItemAvailable("configuration:parameters", p_configInfoSpace );
   p_appInfoSpace->fireItemAvailable("monitoring:parameters",    p_monitorInfoSpace);
-  //p_appInfoSpace->fireItemAvailable("reasonForFailure", &reasonForFailure_);
-  
-  p_appInfoSpace->fireItemAvailable("RunNumber",&m_runNumber);
-  p_appInfoSpace->fireItemAvailable("RunType",  &m_runType  );
-  p_appInfoSpace->fireItemAvailable("CfgType",  &m_cfgType  );
 
-  //is this the correct syntax?
+  // all should come from initialize
+  p_appInfoSpaceToolBox->createInteger64("RunNumber", m_runNumber.value_,   &m_runNumber, utils::GEMInfoSpaceToolBox::PROCESS);
+  p_appInfoSpaceToolBox->createString(   "RunType",   m_runType.toString(), &m_runType,   utils::GEMInfoSpaceToolBox::PROCESS);
+  p_appInfoSpaceToolBox->createString(   "CfgType",   m_cfgType.toString(), &m_cfgType,   utils::GEMInfoSpaceToolBox::PROCESS);
+  // p_appInfoSpaceToolBox->createString("reasonForFailure", &reasonForFailure_,utils::GEMInfoSpaceToolBox::PROCESS);
+
+  // is this the correct syntax? what does it really do?
   p_appInfoSpace->addItemRetrieveListener("RunNumber", this);
   p_appInfoSpace->addItemRetrieveListener("RunType",   this);
   p_appInfoSpace->addItemRetrieveListener("CfgType",   this);
@@ -71,15 +103,13 @@ gem::base::GEMApplication::GEMApplication(xdaq::ApplicationStub *stub)
   p_appInfoSpace->addItemChangedListener( "RunType",   this);
   p_appInfoSpace->addItemChangedListener( "CfgType",   this);
 
-
-  INFO("gem::base::GEMApplication constructed");
+  DEBUG("GEMApplication::gem::base::GEMApplication constructed");
 }
 
 
-gem::base::GEMApplication::~GEMApplication() 
+gem::base::GEMApplication::~GEMApplication()
 {
-  INFO("gem::base::GEMApplication destructor called");
-  
+  DEBUG("GEMApplication::gem::base::GEMApplication destructor called");
 }
 
 std::string gem::base::GEMApplication::getFullURL()
@@ -98,27 +128,28 @@ void gem::base::GEMApplication::actionPerformed(xdata::Event& event)
   // followed by a call to gem::base::GEMApplication::actionPerformed(event)
   /*
     if (event.type() == "setDefaultValues" || event.type() == "urn:xdaq-event:setDefaultValues") {
-    DEBUG("GEMApplication::actionPerformed() setDefaultValues" << 
+    DEBUG("GEMApplication::actionPerformed() setDefaultValues" <<
     "Default configuration values have been loaded from xml profile");
-    //DEBUG("GEMApplication::actionPerformed()   --> starting monitoring");
-    //monitorP_->startMonitoring();
+    // DEBUG("GEMApplication::actionPerformed()   --> starting monitoring");
+    // monitorP_->startMonitoring();
     }
   */
   // update monitoring variables
   if (event.type() == "ItemRetrieveEvent" ||
       event.type() == "urn:xdata-event:ItemRetrieveEvent") {
-    DEBUG("GEMApplication::actionPerformed() ItemRetrieveEvent"
+    INFO("GEMApplication::actionPerformed() ItemRetrieveEvent"
           << "");
-  } else if (event.type() == "ItemGroupRetrieveEvent" || 
+  } else if (event.type() == "ItemGroupRetrieveEvent" ||
              event.type() == "urn:xdata-event:ItemGroupRetrieveEvent") {
-    DEBUG("GEMApplication::actionPerformed() ItemGroupRetrieveEvent"
+    INFO("GEMApplication::actionPerformed() ItemGroupRetrieveEvent"
           << "");
   }
-  //item is changed, update it
-  if (event.type()=="ItemChangedEvent" ||
-      event.type()=="urn:xdata-event:ItemChangedEvent") {
-    DEBUG("GEMApplication::actionPerformed() ItemChangedEvent"
-          << "");
+  // item is changed, update it
+  if (event.type() == "ItemChangedEvent" ||
+      event.type() == "urn:xdata-event:ItemChangedEvent") {
+    INFO("GEMApplication::actionPerformed() ItemChangedEvent"
+         << "m_runNumber:" << m_runNumber
+         << " getInteger64(\"RunNumber\"):" << p_appInfoSpaceToolBox->getInteger64("RunNumber"));
 
     /* from HCAL runInfoServer
        std::list<std::string> names;
@@ -135,52 +166,56 @@ void gem::base::GEMApplication::actionPerformed(xdata::Event& event)
 
 void gem::base::GEMApplication::importConfigurationParameters()
 {
-  //parse the xml configuration file or db configuration information
+  // parse the xml configuration file or db configuration information
 }
 
 
 void gem::base::GEMApplication::fillConfigurationInfoSpace()
 {
-  //put the configuration parameters into the configuration infospace
+  // put the configuration parameters into the configuration infospace
 }
 
 
 void gem::base::GEMApplication::updateConfigurationInfoSpace()
 {
-  //update the configuration infospace object with new items
+  // update the configuration infospace object with new items
 }
 
 
 void gem::base::GEMApplication::importMonitoringParameters()
 {
-  //parse the xml monitoring file or db monitoring information
+  // parse the xml monitoring file or db monitoring information
 }
 
 
 void gem::base::GEMApplication::fillMonitoringInfoSpace()
 {
-  //put the monitoring parameters into the monitoring infospace
+  // put the monitoring parameters into the monitoring infospace
 }
 
 
 void gem::base::GEMApplication::updateMonitoringInfoSpace()
 {
-  //update the monitoring infospace object with new items
+  // update the monitoring infospace object with new items
 }
 
 
 void gem::base::GEMApplication::xgiDefault(xgi::Input* in, xgi::Output* out)
 {
-  p_gemWebInterface->webDefault(in,out);
+  p_gemWebInterface->webDefault(in, out);
 }
 
 void gem::base::GEMApplication::xgiMonitor(xgi::Input* in, xgi::Output* out)
 {
-  p_gemWebInterface->monitorPage(in,out);
+  p_gemWebInterface->monitorPage(in, out);
 }
 
 void gem::base::GEMApplication::xgiExpert(xgi::Input* in, xgi::Output* out)
 {
-  p_gemWebInterface->expertPage(in,out);
+  p_gemWebInterface->expertPage(in, out);
 }
-// End of file
+
+void gem::base::GEMApplication::jsonUpdate(xgi::Input* in, xgi::Output* out)
+{
+  p_gemWebInterface->jsonUpdate(in, out);
+}

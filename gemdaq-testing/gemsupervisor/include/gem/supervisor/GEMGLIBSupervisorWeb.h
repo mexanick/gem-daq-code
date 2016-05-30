@@ -1,5 +1,5 @@
-#ifndef gem_supervisor_GEMGLIBSupervisorWeb_h
-#define gem_supervisor_GEMGLIBSupervisorWeb_h
+#ifndef GEM_SUPERVISOR_GEMGLIBSUPERVISORWEB_H
+#define GEM_SUPERVISOR_GEMGLIBSUPERVISORWEB_H
 
 #include "xdaq/Application.h"
 #include "xdaq/WebApplication.h"
@@ -37,7 +37,18 @@
 #include "xgi/framework/Method.h"
 #include "cgicc/HTMLClasses.h"
 
+#include "gem/readout/GEMslotContents.h"
+
+
+//#include "gem/hw/amc13/Module.hh"
+//#include "amc13/AMC13.hh"
+
 #include <string>
+
+namespace amc13 {
+  class AMC13;
+  class Module;
+}
 
 namespace gem {
   namespace hw {
@@ -179,19 +190,22 @@ namespace gem {
          */
         void noAction(toolbox::Event::Reference e);
 
-	
+
         /**
          *    Callback for action performed
          */
         virtual void actionPerformed(xdata::Event& event);
-        class ConfigParams 
-        {   
+        class ConfigParams
+        {
         public:
           void registerFields(xdata::Bag<ConfigParams> *bag);
 
           xdata::String          deviceIP;
           xdata::String          outFileName;
+          xdata::String          slotFileName;
           xdata::String          outputType;
+
+          xdata::Integer         ohGTXLink;
 
           xdata::Vector<xdata::String>  deviceName;
           xdata::Vector<xdata::Integer> deviceNum;
@@ -205,8 +219,11 @@ namespace gem {
 
       private:
 
+        std::unique_ptr<gem::readout::GEMslotContents> slotInfo;
+
         log4cplus::Logger m_gemLogger;
-	
+
+        toolbox::task::WorkLoopFactory* wlf_;
         toolbox::task::WorkLoop *wl_;
 
         toolbox::BSem wl_semaphore_;
@@ -222,32 +239,33 @@ namespace gem {
 
         toolbox::fsm::FiniteStateMachine fsm_;
 
-        uint8_t readout_mask;
+        uint32_t readout_mask;
         xdata::Bag<ConfigParams> confParams_;
 
         FILE* outputFile;
         uint64_t latency_;
         uint64_t deviceVT1_;
-        bool is_working_, is_initialized_, is_configured_, is_running_;
+        bool is_working_, is_initialized_,  is_configured_, is_running_;
 
         //supervisor application should not have any hw devices, should only send commands to manager applications
         //temporary fix just to get things working stably, should be using the manager
+        amc13::AMC13* amc13_;
+        //amc13::Module* pMod;
+        //std::shared_ptr<amc13::Module> pMod;
+        //std::shared_ptr<amc13::AMC13> amc13_;
         glib_shared_ptr glibDevice_;
-        //gem::hw::glib::HwGLIB* glibDevice_;
         optohybrid_shared_ptr optohybridDevice_;
-        //gem::hw::optohybrid::HwOptoHybrid* optohybridDevice_;
-        //std::vector< gem::hw::vfat::HwVFAT2* > vfatDevice_;
         std::vector<vfat_shared_ptr> vfatDevice_;
         //readout application should be running elsewhere, not tied to supervisor
         std::shared_ptr<gem::readout::GEMDataParker> gemDataParker;
 
         // Counter
-        uint64_t counter_[3];
+        uint32_t m_counter[5];
 
         // VFAT Blocks Counter
         int vfat_;
 
-        // Events Counter     
+        // Events Counter
         int event_;
 
         // VFATs counter per event
@@ -270,6 +288,7 @@ namespace gem {
         void stateChanged(toolbox::fsm::FiniteStateMachine &fsm);
         void transitionFailed(toolbox::Event::Reference event);
       };
-  }
-}
-#endif
+  }  // namespace gem::supervisor
+}  // namespace gem
+
+#endif  // GEM_SUPERVISOR_GEMGLIBSUPERVISORWEB_H
