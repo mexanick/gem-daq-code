@@ -69,21 +69,20 @@ class VFAT_histogram: public Hardware_histogram
       crc_calc->Fill(checkCRC(vfatBlockWords));
       if (vfat->crc()-checkCRC(vfatBlockWords) != 0) Errors->Fill(0);
       SlotN->Fill(m_sn);
-      this->readMap(m_sn);
+      this->readMap(m_sn, m_strip_map);
       uint16_t chan0xf = 0;
       for (int chan = 0; chan < 128; ++chan) {
         if (chan < 64){
           chan0xf = ((vfat->lsData() >> chan) & 0x1);
           if(chan0xf) {
             FiredChannels->Fill(chan);
-            if (DEBUG) std::cout << ".";
             FiredStrips->Fill(m_strip_map[chan]);
           }
         } else {
           chan0xf = ((vfat->msData() >> (chan-64)) & 0x1);
           if(chan0xf) {
             FiredChannels->Fill(chan);
-            if (DEBUG) std::cout << ".";
+            FiredStrips->Fill(m_strip_map[chan]);
           }
         }
       }
@@ -141,46 +140,8 @@ class VFAT_histogram: public Hardware_histogram
     TH1F* thresholdScan[NCHANNELS];
     TH1I* Warnings;
     TH1I* Errors;
-    int m_strip_map[128];
     int m_sn;
-    void readMap(int sn){
-      std::string path = std::getenv("BUILD_HOME");
-      if (sn < 2) {
-        path += "/gem-light-dqm/dqm-root/data/v2b_schema_chips0-1.csv";
-      } else if (sn < 16) {
-        path += "/gem-light-dqm/dqm-root/data/v2b_schema_chips2-15.csv";
-      } else if (sn < 18) {
-        path += "/gem-light-dqm/dqm-root/data/v2b_schema_chips16-17.csv";
-      } else {
-        path += "/gem-light-dqm/dqm-root/data/v2b_schema_chips18-23.csv";
-      }
-      this->readCSV(path);
-    }
-    void readCSV(std::string ifpath_){
-      std::ifstream icsvfile_;
-      icsvfile_.open(ifpath_);
-      if(!icsvfile_.is_open()) {
-        std::cout << "\nThe file: " << icsvfile_ << " is missing.\n" << std::endl;
-        return;
-      }  
-      for (int il = 0; il < 128; il++) {
-        std::string line;
-        std::getline(icsvfile_, line);
-        std::istringstream iss(line);
-        std::string val;
-        std::getline(iss,val,',');
-        std::stringstream convertor(val);
-        int strip;
-        convertor >> std::dec >> strip;
-        std::getline(iss,val,',');
-        convertor.str("");
-        convertor.clear();
-        convertor << val;
-        int channel;
-        convertor >> std::dec >> channel;
-        m_strip_map[channel] = strip;
-      }
-    }
+    int m_strip_map[128];
 
     uint16_t vfatBlockWords[12];   ///<Array of uint16_t used for setVFATBlockWords
 

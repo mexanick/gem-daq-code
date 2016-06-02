@@ -4,7 +4,7 @@
 #include "GEMClusterization/GEMClusterContainer.h"
 #include "GEMClusterization/GEMClusterizer.h"
 #include "TH1.h"
-
+#define NETA 8
 //!A class that creates histograms for GEB data
 class GEB_histogram: public Hardware_histogram
 {
@@ -31,6 +31,13 @@ class GEB_histogram: public Hardware_histogram
       for (int i = 1; i<11; i++) Warnings->GetXaxis()->SetBinLabel(i, warning_flags[i-1]);
       //OHCRC    = new TH1F("OHCRC", "OH CRC", 0xffff,  0x0 , 0xffff);
       Vwt      = new TH1F("Vwt", "VFAT word count", 4095,  0x0 , 0xfff);
+      BeamProfile      = new TH2I("BeamProfile", "2D Occupancy", 8, 0, 8, 384, 0, 384);
+      ClusterMult      = new TH1I("ClusterMult", "Cluster multiplicity", 384,  0, 384 );
+      ClusterSize      = new TH1I("ClusterSize", "Cluster size", 384,  0, 384 );
+      for(int ie=0; ie < NETA; ie++){
+        ClusterMultEta  [ie] = new TH1I(("ClusterMult"+std::to_string(static_cast <long long> (ie))).c_str(), "Cluster multiplicity", 384,  0, 384 );
+        ClusterSizeEta  [ie] = new TH1I(("ClusterSize"+std::to_string(static_cast <long long> (ie))).c_str(), "Cluster size", 384,  0, 384 );
+      }
     }
 
 
@@ -67,8 +74,56 @@ class GEB_histogram: public Hardware_histogram
       for (int i = 0; i < nvfats; i++)
       {
         m_vfat = &(geb->vfats())[i];
-        int m_sn = std::stoi((this->vfatsH())[i].getHWID());
+        m_sn = std::stoi((this->vfatsH())[i].getHWID());
+        this->readMap(m_sn, m_strip_map);
+        uint16_t chan0xf = 0;
+        for (int chan = 0; chan < 128; ++chan) {
+          if (chan < 64){
+            chan0xf = ((m_vfat->lsData() >> chan) & 0x1);
+            if(chan0xf) {
+              int m_i = (int) m_sn%8;
+              int m_j = 127 - m_strip_map[chan] + ((int) m_sn/8)*128;
+              if (allstrips.find(m_i) == allstrips.end()){
+                GEMStripCollection strips;
+                allstrips[m_i]=strips;
+              }
+              // bx set to 0...
+              GEMStrip s(m_j,0);
+              allstrips[m_i].insert(s);
+              BeamProfile->Fill(m_i,m_j);
+            }
+          } else {
+            chan0xf = ((m_vfat->msData() >> (chan-64)) & 0x1);
+            if(chan0xf) {
+              int m_i = (int) m_sn%8;
+              int m_j = 127 - m_strip_map[chan] + ((int) m_sn/8)*128;
+              if (allstrips.find(m_i) == allstrips.end()){
+                GEMStripCollection strips;
+                allstrips[m_i]=strips;
+              }
+              // bx set to 0...
+              GEMStrip s(m_j,0);
+              allstrips[m_i].insert(s);
+              BeamProfile->Fill(m_i,m_j);
+            }
+          }
+        }
       }
+      int ncl=0;
+      int ncleta=0;
+      for (std::map<int, GEMStripCollection>::iterator ieta=allstrips.begin(); ieta!= allstrips.end(); ieta++){
+        ncleta=0;
+        GEMClusterizer clizer;
+        GEMClusterContainer cls = clizer.doAction(ieta->second);
+        ncl+=cls.size();
+        ncleta+=cls.size();
+        for (GEMClusterContainer::iterator icl=cls.begin();icl!=cls.end();icl++){
+          ClusterSize->Fill(icl->clusterSize());    
+          ClusterSizeEta[NETA-1-ieta->first]->Fill(icl->clusterSize());   
+        }
+        ClusterMultEta[NETA-1-ieta->first]->Fill(ncleta);   
+      }
+      ClusterMult->Fill(ncl);
     }
 
     //!Adds a VFAT_histogram object to the m_vfatH vector
@@ -84,6 +139,13 @@ class GEB_histogram: public Hardware_histogram
     TH1I* Warnings;                          ///<Histogram for Warnings (InFIFO underflow, Stuck Data)
     //TH1F* OHCRC;                             ///<Histogram for OH CRC
     TH1F* Vwt;                               ///<Histogram for VFAT word count (trailer)
+    TH2I* BeamProfile;                       ///<Histogram for 2D BeamProfile
+    TH1I* ClusterMult;                       ///<Histogram for GEB cluster multiplicity
+    TH1I* ClusterSize;                       ///<Histogram for GEB cluster size
+    TH1I* ClusterMultEta[NETA];                       ///<Histogram for GEB eta cluster multiplicity
+    TH1I* ClusterSizeEta[NETA];                       ///<Histogram for GEB eta cluster size
     std::map<int, GEMStripCollection> allstrips;
     VFATdata * m_vfat;
+    int m_sn;
+    int m_strip_map[128];
 };
