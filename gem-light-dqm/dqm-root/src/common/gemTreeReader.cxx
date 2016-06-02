@@ -329,7 +329,8 @@ private:
               strcpy(vID_ch,buff);
               auto vfatH_ = vfat_map.find(vID_ch);
               if(vfatH_ != vfat_map.end()) {
-                v_vfatH[vfatH_->second].fillHistograms(&*v);
+                bool final = i == nentries-1;
+                v_vfatH[vfatH_->second].fillHistograms(&*v,final);
                 if (m_RunType){
                   v_vfatH[vfatH_->second].fillScanHistograms(&*v, m_RunType, m_deltaV, m_Latency);
                 }
@@ -338,6 +339,7 @@ private:
                   std::cout << "VFAT Not found\n";
               }
             } /* END VFAT LOOP */
+            
           } /* END GEB LOOP */
           a_c++;
         } /* END AMC LOOP */
