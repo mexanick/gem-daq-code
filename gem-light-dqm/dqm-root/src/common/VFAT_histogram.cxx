@@ -35,17 +35,18 @@ class VFAT_histogram: public Hardware_histogram
       crc_difference = new TH1F("crc_difference", "difference between crc and crc_calc", 0xffff,  -32768 , 32768);
       latencyScan = new TH1F("latencyScan", "Latency Scan", 255,  0, 255);
       thresholdScanChip = new TH1F("thresholdScan","Threshold Scan",255,0,255);
-      TDirectory * scandir = gDirectory->mkdir("Threshold_Scans");
-      scandir->cd();
-      for (int i = 0; i < 128; i++){
-        thresholdScan[i] = new TH1F(("thresholdScan"+to_string(static_cast<long long int>(i))).c_str(),("thresholdScan"+to_string(static_cast<long long int>(i))).c_str(),256,0,256);
-      }// end loop on channels
       const char *warning_labels[3] = {"Flag raised", "No channels fired", "Excessive channels fired"};
       const char *error_labels[1] = {"CRC mismatch"};
       Warnings = new TH1I("Warnings", "Warnings", 3,  0, 3);
       for (int i = 1; i<4; i++) Warnings->GetXaxis()->SetBinLabel(i, warning_labels[i-1]);
       Errors   = new TH1I("Errors", "Critical errors", 1,  0, 1);
       for (int i = 1; i<2; i++) Errors->GetXaxis()->SetBinLabel(i, error_labels[i-1]);
+
+      TDirectory * scandir = gDirectory->mkdir("Threshold_Scans");
+      scandir->cd();
+      for (int i = 0; i < 128; i++){
+        thresholdScan[i] = new TH1F(("thresholdScan"+to_string(static_cast<long long int>(i))).c_str(),("thresholdScan"+to_string(static_cast<long long int>(i))).c_str(),256,0,256);
+      }// end loop on channels
       gDirectory->cd("..");
     }
     
@@ -67,7 +68,9 @@ class VFAT_histogram: public Hardware_histogram
       crc->Fill(vfat->crc());
       setVFATBlockWords(vfat);
       crc_calc->Fill(checkCRC(vfatBlockWords));
-      if (vfat->crc()-checkCRC(vfatBlockWords) != 0) Errors->Fill(0);
+      if (vfat->crc()-checkCRC(vfatBlockWords) != 0) {
+        Errors->Fill(0);
+      }
       SlotN->Fill(m_sn);
       this->readMap(m_sn, m_strip_map);
       uint16_t chan0xf = 0;
@@ -88,7 +91,8 @@ class VFAT_histogram: public Hardware_histogram
       }
 
       if (final) {
-        if (DEBUG) std::cout << "[VFAT_histogram]" << "Fired Channels: " << FiredChannels->GetEntries() << std::endl;
+        if (DEBUG) std::cout << "[VFAT_histogram] Slot " << std::stoi(m_HWID) << " Fired Channels: " << FiredChannels->GetEntries() << std::endl;
+        if (DEBUG) std::cout << "[VFAT_histogram] Slot " << std::stoi(m_HWID) << " CRC Mismatches: " << Errors->GetEntries() << std::endl;
         if (FiredChannels->GetEntries() == 0) { 
           Warnings->Fill(1);
         }
