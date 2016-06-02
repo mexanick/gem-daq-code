@@ -4,6 +4,7 @@
 #define NCHANNELS 128
 
 //!A class that creates histogram for VFAT data
+
 class VFAT_histogram: public Hardware_histogram
 {
   public:
@@ -39,6 +40,12 @@ class VFAT_histogram: public Hardware_histogram
       for (int i = 0; i < 128; i++){
         thresholdScan[i] = new TH1F(("thresholdScan"+to_string(static_cast<long long int>(i))).c_str(),("thresholdScan"+to_string(static_cast<long long int>(i))).c_str(),256,0,256);
       }// end loop on channels
+      const char *warning_labels[3] = {"Flag raised", "No channels fired", "Excessive channels fired"};
+      const char *error_labels[1] = {"CRC mismatch"};
+      Warnings = new TH1I("Warnings", "Warnings", 3,  0, 3);
+      for (int i = 1; i<4; i++) Warnings->GetXaxis()->SetBinLabel(i, warning_labels[i-1]);
+      Errors   = new TH1I("Errors", "Critical errors", 1,  0, 1);
+      for (int i = 1; i<2; i++) Errors->GetXaxis()->SetBinLabel(i, error_labels[i-1]);
       gDirectory->cd("..");
     }
     
@@ -46,7 +53,7 @@ class VFAT_histogram: public Hardware_histogram
     /*!
      This fills histograms for the following data: Difference between crc and recalculated crc, Control Bit 1010, Control Bit 1100, Control Bit 1110, Bunch Crossing Number, Event Counter, Control Flags, and Chip ID, and Fired Channels
      */
-        void fillHistograms(VFATdata * vfat){
+  void fillHistograms(VFATdata * vfat, bool final){
       setVFATBlockWords(vfat); 
       crc_difference->Fill(vfat->crc()-checkCRC(vfatBlockWords));  
       b1010->Fill(vfat->b1010());
@@ -60,6 +67,7 @@ class VFAT_histogram: public Hardware_histogram
       crc->Fill(vfat->crc());
       setVFATBlockWords(vfat);
       crc_calc->Fill(checkCRC(vfatBlockWords));
+      if (vfat->crc()-checkCRC(vfatBlockWords) != 0) Errors->Fill(0);
       SlotN->Fill(m_sn);
       this->readMap(m_sn);
       uint16_t chan0xf = 0;
@@ -68,11 +76,25 @@ class VFAT_histogram: public Hardware_histogram
           chan0xf = ((vfat->lsData() >> chan) & 0x1);
           if(chan0xf) {
             FiredChannels->Fill(chan);
+            if (DEBUG) std::cout << ".";
             FiredStrips->Fill(m_strip_map[chan]);
           }
         } else {
           chan0xf = ((vfat->msData() >> (chan-64)) & 0x1);
-          if(chan0xf) FiredChannels->Fill(chan);
+          if(chan0xf) {
+            FiredChannels->Fill(chan);
+            if (DEBUG) std::cout << ".";
+          }
+        }
+      }
+
+      if (final) {
+        if (DEBUG) std::cout << "[VFAT_histogram]" << "Fired Channels: " << FiredChannels->GetEntries() << std::endl;
+        if (FiredChannels->GetEntries() == 0) { 
+          Warnings->Fill(1);
+        }
+        else if (FiredChannels->GetEntries() > 64*b1010->GetEntries()) {
+          Warnings->Fill(2);
         }
       }
     }
@@ -117,6 +139,8 @@ class VFAT_histogram: public Hardware_histogram
     TH1F* latencyScan;
     TH1F* thresholdScanChip;
     TH1F* thresholdScan[NCHANNELS];
+    TH1I* Warnings;
+    TH1I* Errors;
     int m_strip_map[128];
     int m_sn;
     void readMap(int sn){
