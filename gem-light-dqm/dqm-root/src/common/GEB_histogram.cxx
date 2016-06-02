@@ -1,4 +1,8 @@
 #include "VFAT_histogram.cxx"
+#include "GEMClusterization/GEMStrip.h"
+#include "GEMClusterization/GEMStripCollection.h"
+#include "GEMClusterization/GEMClusterContainer.h"
+#include "GEMClusterization/GEMClusterizer.h"
 #include "TH1.h"
 
 //!A class that creates histograms for GEB data
@@ -59,6 +63,12 @@ class GEB_histogram: public Hardware_histogram
       }
       binFired = (geb->InFu() & 0x1);
       if (binFired) Warnings->Fill(4);
+      int nvfats = (geb->vfats()).size(); 
+      for (int i = 0; i < nvfats; i++)
+      {
+        m_vfat = &(geb->vfats())[i];
+        int m_sn = std::stoi((this->vfatsH())[i].getHWID());
+      }
     }
 
     //!Adds a VFAT_histogram object to the m_vfatH vector
@@ -74,4 +84,6 @@ class GEB_histogram: public Hardware_histogram
     TH1I* Warnings;                          ///<Histogram for Warnings (InFIFO underflow, Stuck Data)
     //TH1F* OHCRC;                             ///<Histogram for OH CRC
     TH1F* Vwt;                               ///<Histogram for VFAT word count (trailer)
+    std::map<int, GEMStripCollection> allstrips;
+    VFATdata * m_vfat;
 };
