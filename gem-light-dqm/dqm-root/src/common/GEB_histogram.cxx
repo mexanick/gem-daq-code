@@ -5,6 +5,7 @@
 #include "GEMClusterization/GEMClusterizer.h"
 #include "TH1.h"
 #define NETA 8
+#include "gem/readout/GEMslotContents.h"
 //!A class that creates histograms for GEB data
 class GEB_histogram: public Hardware_histogram
 {
@@ -38,6 +39,7 @@ class GEB_histogram: public Hardware_histogram
         ClusterMultEta  [ie] = new TH1I(("ClusterMult"+std::to_string(static_cast <long long> (ie))).c_str(), "Cluster multiplicity", 384,  0, 384 );
         ClusterSizeEta  [ie] = new TH1I(("ClusterSize"+std::to_string(static_cast <long long> (ie))).c_str(), "Cluster size", 384,  0, 384 );
       }
+      SlotN   = new TH1I("VFATSlots", "VFAT Slots", 24,  0, 24);
     }
 
 
@@ -70,11 +72,13 @@ class GEB_histogram: public Hardware_histogram
       }
       binFired = (geb->InFu() & 0x1);
       if (binFired) Warnings->Fill(4);
-      int nvfats = (geb->vfats()).size(); 
-      for (int i = 0; i < nvfats; i++)
+      v_vfat = geb->vfats();
+      for (auto m_vfat = v_vfat.begin(); m_vfat!=v_vfat.end(); m_vfat++)
       {
-        m_vfat = &(geb->vfats())[i];
-        m_sn = std::stoi((this->vfatsH())[i].getHWID());
+        std::unique_ptr<gem::readout::GEMslotContents> slotInfo_ = std::unique_ptr<gem::readout::GEMslotContents> (new gem::readout::GEMslotContents("slot_table.csv"));     
+        m_sn = slotInfo_->GEBslotIndex(m_vfat->ChipID());  //converts Chip ID into VFAT slot number
+        SlotN->Fill(m_sn);
+        ofstream myfile;
         this->readMap(m_sn, m_strip_map);
         uint16_t chan0xf = 0;
         for (int chan = 0; chan < 128; ++chan) {
@@ -144,8 +148,10 @@ class GEB_histogram: public Hardware_histogram
     TH1I* ClusterSize;                       ///<Histogram for GEB cluster size
     TH1I* ClusterMultEta[NETA];                       ///<Histogram for GEB eta cluster multiplicity
     TH1I* ClusterSizeEta[NETA];                       ///<Histogram for GEB eta cluster size
+    TH1I* SlotN;                          ///<Histogram for VFAT slots
     std::map<int, GEMStripCollection> allstrips;
-    VFATdata * m_vfat;
+    //VFATdata * m_vfat;
+    std::vector<VFATdata> v_vfat;       ///Vector of VFATdata
     int m_sn;
     int m_strip_map[128];
 };

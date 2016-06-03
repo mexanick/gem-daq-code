@@ -56,7 +56,8 @@ class VFAT_histogram: public Hardware_histogram
      */
   void fillHistograms(VFATdata * vfat, bool final){
       setVFATBlockWords(vfat); 
-      crc_difference->Fill(vfat->crc()-checkCRC(vfatBlockWords));  
+      int crc_diff = vfat->crc()-checkCRC(vfatBlockWords);
+      crc_difference->Fill(crc_diff);  
       b1010->Fill(vfat->b1010());
       b1100->Fill(vfat->b1100());
       b1110->Fill(vfat->b1110());
@@ -68,7 +69,7 @@ class VFAT_histogram: public Hardware_histogram
       crc->Fill(vfat->crc());
       setVFATBlockWords(vfat);
       crc_calc->Fill(checkCRC(vfatBlockWords));
-      if (vfat->crc()-checkCRC(vfatBlockWords) != 0) {
+      if (crc_diff) {
         Errors->Fill(0);
       }
       SlotN->Fill(m_sn);
@@ -152,8 +153,8 @@ class VFAT_histogram: public Hardware_histogram
     //!This puts the VFAT data in an array of uint16_t to be used for the crc check
     void setVFATBlockWords(VFATdata * vfat_)
     {
-      vfatBlockWords[11] = ((0x000f & vfat_->b1010())<<12) |  vfat_->BC();
-      vfatBlockWords[10] = ((0x000f & vfat_->b1100())<<12) | vfat_->EC() | ((0x000f & vfat_->Flag())<<12);
+      vfatBlockWords[11] = ((0x000f & vfat_->b1010())<<12) | vfat_->BC();
+      vfatBlockWords[10] = ((0x000f & vfat_->b1100())<<12) | ((0x00ff & vfat_->EC()) <<4) | (0x000f & vfat_->Flag());
       vfatBlockWords[9]  = ((0x000f & vfat_->b1110())<<12) | vfat_->ChipID();
       vfatBlockWords[8]  = (0xffff000000000000 & vfat_->msData()) >> 48;
       vfatBlockWords[7]  = (0x0000ffff00000000 & vfat_->msData()) >> 32;
