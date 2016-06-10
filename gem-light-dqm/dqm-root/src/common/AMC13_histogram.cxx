@@ -18,7 +18,7 @@ class AMC13_histogram: public Hardware_histogram
       control_bit5 = new TH1F("Control_Bit5", "Control Bit 5", 15,  0x0 , 0xf);
       control_bitA = new TH1F("Control_BitA", "Control Bit A", 15,  0x0 , 0xf); 
       Evt_ty       = new TH1F("Evt_ty", "Evt_ty", 15, 0x0, 0xf);
-      LV1_id       = new TH1F("LV1_id", "LV1_id", 0xffffff, 0x0, 0xffffff);
+      //LV1_id       = new TH1F("LV1_id", "LV1_id", 0xffffff, 0x0, 0xffffff);
       BX_id        = new TH1F("Bx_id", "Bx_id", 4095, 0x0, 0xfff);
       Source_id    = new TH1F("Source_id", "Source_id", 4095, 0x0, 0xfff);
       CalTyp       = new TH1F("CalTyp", "CalTyp", 15, 0x0, 0xf);
@@ -41,7 +41,7 @@ class AMC13_histogram: public Hardware_histogram
       nAMC->Fill(amc13->nAMC());
       control_bit5->Fill(amc13->cb_5());
       Evt_ty->Fill(amc13->Evt_ty());
-      LV1_id->Fill(amc13->LV1_id());
+      //LV1_id->Fill(amc13->LV1_id());
       BX_id->Fill(amc13->BX_id());
       Source_id->Fill(amc13->Source_id());
       CalTyp->Fill(amc13->CalTyp());
@@ -65,7 +65,7 @@ class AMC13_histogram: public Hardware_histogram
     TH1F* control_bit5;                   ///<Histogram for control bit 5
     TH1F* control_bitA;                   ///<Histogram for control bit A
     TH1F* Evt_ty;                         ///<Histogram for Evt_ty
-    TH1F* LV1_id;                         ///<Histogram for LV1_id
+    //TH1F* LV1_id;                         ///<Histogram for LV1_id
     TH1F* BX_id;                          ///<Histogram for BX_id
     TH1F* Source_id;                      ///<Histogram for Source_id
     TH1F* CalTyp;                         ///<Histogram for CalTyp

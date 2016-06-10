@@ -16,9 +16,9 @@ class AMC_histogram: public Hardware_histogram
     {
       m_dir->cd();
       AMCnum     = new TH1F("AMCnum", "AMC number", 12,  0, 12);
-      L1A        = new TH1F("L1A", "L1A ID", 0xffffff,  0x0, 0xffffff);      
+      //L1A        = new TH1F("L1A", "L1A ID", 0xffffff,  0x0, 0xffffff);      
       BX         = new TH1F("BX", "BX ID", 4095,  0x0, 0xfff);
-      Dlength    = new TH1F("Dlength", "Data Length", 0xfffff,  0x0, 0xfffff);
+      //Dlength    = new TH1F("Dlength", "Data Length", 0xfffff,  0x0, 0xfffff);
       FV         = new TH1F("FV", "Format Version", 15,  0x0, 0xf);
       Rtype      = new TH1F("Rtype", "Run Type", 15,  0x0, 0xf);
       Param1     = new TH1F("Param1", "Run Param 1", 255,  0, 255);
@@ -33,8 +33,8 @@ class AMC_histogram: public Hardware_histogram
       ChamT      = new TH1F("ChamT", "Chamber Timeout", 24, 0, 24);
       OOSG       = new TH1F("OOSG", "OOS GLIB", 1, 0, 1);
       CRC        = new TH1D("CRC", "CRC", 4294967295, 0, 4294967295);// histogram overflow! Can't handle 32-bit number...
-      L1AT       = new TH1F("L1AT", "L1AT", 0xffffff,  0x0, 0xffffff);
-      DlengthT   = new TH1F("DlengthT", "DlengthT", 0xffffff,  0x0, 0xffffff);
+      //L1AT       = new TH1F("L1AT", "L1AT", 0xffffff,  0x0, 0xffffff);
+      //DlengthT   = new TH1F("DlengthT", "DlengthT", 0xffffff,  0x0, 0xffffff);
     }
 
      //!Fills the histograms for AMC data
@@ -43,9 +43,9 @@ class AMC_histogram: public Hardware_histogram
     */
     void fillHistograms(AMCdata *amc){
       AMCnum->Fill(amc->AMCnum());
-      L1A->Fill(amc->L1A());
+      //L1A->Fill(amc->L1A());
       BX->Fill(amc->BX());
-      Dlength->Fill(amc->Dlength());
+      //Dlength->Fill(amc->Dlength());
       FV->Fill(amc->FV());
       Rtype->Fill(amc->Rtype());
       Param1->Fill(amc->Param1());
@@ -57,8 +57,8 @@ class AMC_histogram: public Hardware_histogram
       Tstate->Fill(amc->Tstate());
       OOSG->Fill(amc->OOSG());
       CRC->Fill(amc->CRC());
-      L1AT->Fill(amc->L1AT());
-      DlengthT->Fill(amc->DlengthT());
+      //L1AT->Fill(amc->L1AT());
+      //DlengthT->Fill(amc->DlengthT());
       uint8_t binFired = 0;
       for (int bin = 0; bin < 24; bin++){
         binFired = ((amc->GEMDAV() >> bin) & 0x1);
