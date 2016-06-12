@@ -41,6 +41,7 @@ gem::hw::amc13::AMC13Readout::AMC13Readout(xdaq::ApplicationStub* stub)
         << " m_crateID:"        << m_crateID.toString()        << std::endl
         << " m_slot:"           << m_slot.toString()           << std::endl
         );
+  m_cnt = 0;
   DEBUG("AMC13Readout ctor end");
 }
 
@@ -165,7 +166,7 @@ int gem::hw::amc13::AMC13Readout::dumpData()
 
   //FILE *fp;
   //fp = fopen(m_outFileName.c_str(), "a");
-  std::ofstream outf(m_outFileName.c_str(), std::ios_base::app | std::ios::binary );
+  std::ofstream outf((m_outFileName+std::to_string(static_cast <long long> (m_cnt))).c_str(), std::ios_base::app | std::ios::binary );
   int nwrote = 0;
 
   DEBUG("File for output open");
@@ -197,6 +198,7 @@ int gem::hw::amc13::AMC13Readout::dumpData()
   DEBUG("Closing file" << std::endl);
   //fclose(fp);
   outf.close();
+  m_cnt++;
   return nwrote;
 }
 

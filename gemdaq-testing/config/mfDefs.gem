@@ -36,6 +36,7 @@ UserDynamicLinkFlags =
 IncludeDirs+=$(XDAQ_ROOT)/include
 LibraryDirs+=$(XDAQ_ROOT)/lib
 DependentLibraryDirs+=$(XDAQ_ROOT)/lib
+DependentLibraryDirs+=$(uHALROOT)/lib
 
 DependentLibraries+=asyncresolv boost_system config log4cplus
 DependentLibraries+=numa toolbox uuid xcept xdaq2rc xerces-c
