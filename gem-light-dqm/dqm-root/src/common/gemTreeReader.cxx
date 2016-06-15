@@ -127,7 +127,7 @@ private:
       TBranch *branch = tree->GetBranch("GEMEvents");
       branch->SetAddress(&event);
       Int_t nentries = tree->GetEntries();
-      branch->GetEntry(120);
+      branch->GetEntry(0);
       v_amc13 = event->amc13s();
       for(auto a13 = v_amc13.begin(); a13!= v_amc13.end(); a13++){
 	      v_amc = a13->amcs();
