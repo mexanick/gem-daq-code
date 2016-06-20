@@ -1,4 +1,4 @@
-#define DEBUG 1
+#define DEBUG 0
 #define NVFAT 24
 #define NETA 8
 #include <iomanip> 
@@ -221,17 +221,20 @@ private:
           v_c=0;
 
           /* LOOP THROUGH VFATs */
-          for(auto v=v_vfat.begin(); v!=v_vfat.end();v++){
+          //for(auto v=v_vfat.begin(); v!=v_vfat.end();v++){
+          for(int i=0; i<24; i++){
             char dirvfat[30];   //filename for VFAT directory
             dirvfat[0]='\0';    
             char vslot_ch[2];   //char used to put VFAT number into directory name
             vslot_ch[0] = '\0';
             std::unique_ptr<gem::readout::GEMslotContents> slotInfo_ = std::unique_ptr<gem::readout::GEMslotContents> (new gem::readout::GEMslotContents("slot_table.csv"));     
-            int vslot = slotInfo_->GEBslotIndex(v->ChipID());  //converts Chip ID into VFAT slot number
+            int t_chipID = slotInfo_->GEBChipIdFromSlot(i);
+            //int vslot = slotInfo_->GEBslotIndex(v->ChipID());  //converts Chip ID into VFAT slot number
+            int vslot = slotInfo_->GEBslotIndex(t_chipID);
             sprintf(vslot_ch, "%d", vslot);
             strcat(dirvfat,"VFAT-");
             strcat(dirvfat, vslot_ch);
-            int vID = v->ChipID();
+            int vID = t_chipID;
             if (DEBUG) std::cout << std::dec << "[gemTreeReader]: VFAT chip ID " << std::hex << vID << std::dec << std::endl;
             char vID_ch[10];
             vID_ch[0] = '\0';
@@ -245,7 +248,7 @@ private:
             //VFAT HISTOGRAMS HERE
             m_vfatH = new VFAT_histogram(ofilename, gDirectory->mkdir(dirvfat), vslot_ch);
             m_vfatH->bookHistograms();
-            std::cout << "VFAT ID " << vID_ch << std::endl;
+            //std::cout << "VFAT ID " << vID_ch << std::endl;
             vfat_map.insert(std::make_pair(vID_ch, v_c));
             m_gebH->addVFATH(*m_vfatH);
             if (DEBUG) std::cout << std::dec << "[gemTreeReader]: GEB VFATs size " << m_gebH->vfatsH().size() << std::endl;
@@ -337,6 +340,7 @@ private:
               }
               else {
                   std::cout << "VFAT Not found\n";
+                  std::cout << "Chip ID " << vID_ch <<"\n";
               }
             } /* END VFAT LOOP */
             
